@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Receipt, FileText, CalendarPlus } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { Plus, Receipt, FileText } from 'lucide-react';
 import { useAppStore } from '../store/useAppStore';
 
-const SpeedDial: React.FC = () => {
+interface SpeedDialProps {
+  onOpenCrm: () => void;
+}
+
+const SpeedDial: React.FC<SpeedDialProps> = ({ onOpenCrm }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const navigate = useNavigate();
   const openExpenseModal = useAppStore(state => state.openExpenseModal);
 
   const toggleOpen = () => setIsOpen(!isOpen);
@@ -14,38 +16,25 @@ const SpeedDial: React.FC = () => {
   // Actions for the dial
   const actions = [
     {
-      icon: <FileText size={20} />,
-      label: "טופס לקוח",
-      onClick: () => {
-        setIsOpen(false);
-        // Maybe copy the link to clipboard? Or navigate to /new
-        navigate('/new');
-      },
-      delay: 0.1
-    },
-    {
       icon: <Receipt size={20} />,
-      label: "הוצאה",
+      label: "הוצאה חדשה",
       onClick: () => {
         setIsOpen(false);
         openExpenseModal();
-      },
-      delay: 0.15
+      }
     },
     {
-      icon: <CalendarPlus size={20} />,
-      label: "הוסף עבודה",
+      icon: <FileText size={20} />,
+      label: "שליחת טופס לקוח",
       onClick: () => {
         setIsOpen(false);
-        // For now, same as new customer form, but we can expand it later
-        navigate('/new'); 
-      },
-      delay: 0.2
+        onOpenCrm();
+      }
     }
   ];
 
   return (
-    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex justify-center items-center">
+    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center">
       <AnimatePresence>
         {isOpen && (
           <>
@@ -58,35 +47,25 @@ const SpeedDial: React.FC = () => {
               onClick={() => setIsOpen(false)}
             />
             
-            {/* The circular buttons */}
-            {actions.map((action, index) => {
-              // Calculate position on a semi-circle (arc) around the main button
-              const angle = (Math.PI / (actions.length - 1)) * index;
-              const radius = 80; // Distance from center
-              
-              // CSS coordinates: bottom-up so Y is negative
-              const x = Math.cos(angle) * radius * -1; // -1 to flip left-to-right
-              const y = Math.sin(angle) * radius * -1;
-
-              return (
+            {/* The vertical buttons */}
+            <div className="absolute bottom-16 flex flex-col items-center gap-3 z-50 mb-2">
+              {actions.map((action, index) => (
                 <motion.button
                   key={index}
-                  initial={{ opacity: 0, x: 0, y: 0, scale: 0 }}
-                  animate={{ opacity: 1, x, y, scale: 1 }}
-                  exit={{ opacity: 0, x: 0, y: 0, scale: 0 }}
-                  transition={{ delay: action.delay, type: 'spring', stiffness: 200, damping: 15 }}
+                  initial={{ opacity: 0, y: 20, scale: 0.8 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 20, scale: 0.8 }}
+                  transition={{ delay: index * 0.05, type: 'spring', stiffness: 300, damping: 20 }}
                   onClick={action.onClick}
-                  className="absolute bg-white dark:bg-gray-800 text-sage p-3 rounded-full shadow-xl flex items-center justify-center border-2 border-sage z-50 group"
-                  style={{ width: 48, height: 48 }}
+                  className="flex items-center gap-3 bg-white dark:bg-gray-800 text-sage p-3 rounded-full shadow-xl border border-gray-100 dark:border-gray-700 w-max pr-5 pl-4 group hover:bg-sage hover:text-white transition-colors"
                 >
-                  {action.icon}
-                  {/* Tooltip */}
-                  <span className="absolute top-14 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                    {action.label}
-                  </span>
+                  <span className="font-bold text-sm">{action.label}</span>
+                  <div className="bg-sage/10 group-hover:bg-white/20 p-2 rounded-full">
+                    {action.icon}
+                  </div>
                 </motion.button>
-              );
-            })}
+              ))}
+            </div>
           </>
         )}
       </AnimatePresence>

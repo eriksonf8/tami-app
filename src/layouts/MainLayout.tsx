@@ -18,7 +18,7 @@ const MainLayout: React.FC = () => {
         <Outlet />
       </main>
 
-      <SpeedDial />
+      <SpeedDial onOpenCrm={() => setShowCrmModal(true)} />
       <BottomNav />
       <ExpenseModal />
 
