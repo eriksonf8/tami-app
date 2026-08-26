@@ -40,6 +40,8 @@ export interface UserProfile {
   businessName: string;
   phone: string;
   taxCeiling: number;
+  profession?: string;
+  customJobTypes?: string[];
 }
 
 export interface Settings {
@@ -79,6 +81,11 @@ interface AppState {
   
   isWorking: boolean;
   toggleWorkingMode: () => void;
+  
+  isExpenseModalOpen: boolean;
+  editingExpenseId: string | null;
+  openExpenseModal: (expenseId?: string) => void;
+  closeExpenseModal: () => void;
 }
 
 export const useAppStore = create<AppState>()(
@@ -166,7 +173,12 @@ export const useAppStore = create<AppState>()(
           }
         }, 10);
         return { isWorking: nextState };
-      })
+      }),
+      
+      isExpenseModalOpen: false,
+      editingExpenseId: null,
+      openExpenseModal: (expenseId) => set({ isExpenseModalOpen: true, editingExpenseId: expenseId || null }),
+      closeExpenseModal: () => set({ isExpenseModalOpen: false, editingExpenseId: null })
     }),
     {
       name: 'tami-app-storage',

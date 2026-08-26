@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import BottomNav from '../components/BottomNav';
-import { Plus } from 'lucide-react';
+
+import SpeedDial from '../components/SpeedDial';
+import ExpenseModal from '../components/ExpenseModal';
 
 const MainLayout: React.FC = () => {
   const [showCrmModal, setShowCrmModal] = useState(false);
-
 
   return (
     <div className="min-h-screen flex flex-col relative pb-20">
@@ -17,17 +18,9 @@ const MainLayout: React.FC = () => {
         <Outlet />
       </main>
 
-      {/* Central FAB */}
-      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50">
-        <button
-          onClick={() => setShowCrmModal(true)}
-          className="bg-sage text-white w-14 h-14 rounded-full flex items-center justify-center shadow-lg active:scale-95 transition-transform"
-        >
-          <Plus size={32} />
-        </button>
-      </div>
-
+      <SpeedDial />
       <BottomNav />
+      <ExpenseModal />
 
       {/* Basic CRM Modal placeholder */}
       {showCrmModal && (

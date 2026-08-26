@@ -1,26 +1,42 @@
 import React, { useState, useRef } from 'react';
-import { type Expense, useAppStore } from '../store/useAppStore';
+import { useAppStore } from '../store/useAppStore';
 import { Save, X, Camera, Trash2 } from 'lucide-react';
 
-interface ExpenseModalProps {
-  expense?: Expense;
-  onClose: () => void;
-}
 
 const CATEGORIES = ['חומרי גלם / ציוד', 'דלק / נסיעות', 'תקשורת', 'מסעדות / כיבוד', 'שיווק', 'אחר'];
 
-const ExpenseModal: React.FC<ExpenseModalProps> = ({ expense, onClose }) => {
+const ExpenseModal: React.FC = () => {
+  const isOpen = useAppStore(state => state.isExpenseModalOpen);
+  const editingExpenseId = useAppStore(state => state.editingExpenseId);
+  const closeExpenseModal = useAppStore(state => state.closeExpenseModal);
+  
   const addExpense = useAppStore(state => state.addExpense);
   const updateExpense = useAppStore(state => state.updateExpense);
   const removeExpense = useAppStore(state => state.removeExpense);
+  const expenses = useAppStore(state => state.expenses);
+  
+  const expense = editingExpenseId ? expenses.find(e => e.id === editingExpenseId) : undefined;
   
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [amount, setAmount] = useState(expense?.amount?.toString() || '');
-  const [date, setDate] = useState(expense?.date || new Date().toISOString().split('T')[0]);
-  const [category, setCategory] = useState(expense?.category || CATEGORIES[0]);
-  const [description, setDescription] = useState(expense?.description || '');
-  const [photoUrl, setPhotoUrl] = useState(expense?.photoUrl || '');
+  const [amount, setAmount] = useState('');
+  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+  const [category, setCategory] = useState(CATEGORIES[0]);
+  const [description, setDescription] = useState('');
+  const [photoUrl, setPhotoUrl] = useState('');
+
+  // Sync state when expense changes (e.g. modal opens for editing)
+  React.useEffect(() => {
+    if (isOpen) {
+      setAmount(expense?.amount?.toString() || '');
+      setDate(expense?.date || new Date().toISOString().split('T')[0]);
+      setCategory(expense?.category || CATEGORIES[0]);
+      setDescription(expense?.description || '');
+      setPhotoUrl(expense?.photoUrl || '');
+    }
+  }, [isOpen, expense]);
+
+  if (!isOpen) return null;
 
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -53,18 +69,18 @@ const ExpenseModal: React.FC<ExpenseModalProps> = ({ expense, onClose }) => {
       addExpense(expenseData);
     }
     
-    onClose();
+    closeExpenseModal();
   };
 
   const handleDelete = () => {
     if (expense && window.confirm('האם אתה בטוח שברצונך למחוק הוצאה זו?')) {
       removeExpense(expense.id);
-      onClose();
+      closeExpenseModal();
     }
   };
 
   return (
-    <div className="fixed inset-0 bg-black/60 z-[100] flex flex-col justify-end sm:justify-center items-center sm:p-4" onClick={onClose}>
+    <div className="fixed inset-0 bg-black/60 z-[100] flex flex-col justify-end sm:justify-center items-center sm:p-4" onClick={closeExpenseModal}>
       <div 
         className="bg-white dark:bg-gray-800 rounded-t-3xl sm:rounded-3xl p-6 w-full max-w-md shadow-2xl overflow-y-auto max-h-[90vh]" 
         onClick={e => e.stopPropagation()}
@@ -79,7 +95,7 @@ const ExpenseModal: React.FC<ExpenseModalProps> = ({ expense, onClose }) => {
                 <Trash2 size={20} />
               </button>
             )}
-            <button onClick={onClose} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 p-2 bg-gray-100 dark:bg-gray-700 rounded-full">
+            <button onClick={closeExpenseModal} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 p-2 bg-gray-100 dark:bg-gray-700 rounded-full">
               <X size={20} />
             </button>
           </div>

@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useAppStore } from '../store/useAppStore';
-import { User, Moon, Download, LogOut, ArrowLeft } from 'lucide-react';
+import { User, Moon, Download, LogOut, ArrowLeft, Briefcase, Plus, X } from 'lucide-react';
+import { PROFESSION_NAMES } from '../constants/professions';
 
 const Settings: React.FC = () => {
   const profile = useAppStore(state => state.profile);
@@ -9,6 +10,8 @@ const Settings: React.FC = () => {
   const setProfile = useAppStore(state => state.setProfile);
   const jobs = useAppStore(state => state.jobs);
   const expenses = useAppStore(state => state.expenses);
+
+  const [newCustomJob, setNewCustomJob] = useState('');
 
   const handleExport = () => {
     const report = {
@@ -119,6 +122,64 @@ const Settings: React.FC = () => {
               />
               <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:-translate-x-full rtl:peer-checked:after:-translate-x-5 peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:right-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-sage"></div>
             </label>
+          </div>
+          
+          {/* Profession Setting */}
+          <div className="pt-4 border-t border-gray-100 dark:border-gray-700">
+            <div className="flex items-center gap-3 mb-3">
+              <Briefcase size={20} className="text-gray-500 dark:text-gray-400" />
+              <span className="font-medium dark:text-white">סוג העסק שלך</span>
+            </div>
+            <select 
+              className="w-full p-3 border rounded-xl bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm mb-4 outline-none focus:ring-2 focus:ring-sage"
+              value={profile?.profession || ''}
+              onChange={(e) => profile && setProfile({ ...profile, profession: e.target.value })}
+            >
+              <option value="" disabled>בחר סוג עסק</option>
+              {PROFESSION_NAMES.map(p => (
+                <option key={p} value={p}>{p}</option>
+              ))}
+            </select>
+            
+            <div className="text-sm">
+              <p className="font-medium mb-2 dark:text-gray-300">סוגי עבודות מותאמים אישית:</p>
+              <div className="flex flex-wrap gap-2 mb-3">
+                {profile?.customJobTypes?.map((job, idx) => (
+                  <div key={idx} className="bg-sage/10 text-sage px-3 py-1 rounded-full flex items-center gap-2">
+                    <span>{job}</span>
+                    <button onClick={() => {
+                      if (profile) {
+                        const newArr = profile.customJobTypes?.filter(j => j !== job) || [];
+                        setProfile({ ...profile, customJobTypes: newArr });
+                      }
+                    }}>
+                      <X size={14} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+              <div className="flex gap-2">
+                <input 
+                  type="text" 
+                  className="flex-1 p-2 border rounded-xl bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm"
+                  placeholder="הוסף שירות חדש..."
+                  value={newCustomJob}
+                  onChange={e => setNewCustomJob(e.target.value)}
+                />
+                <button 
+                  onClick={() => {
+                    if (newCustomJob.trim() && profile) {
+                      const newArr = [...(profile.customJobTypes || []), newCustomJob.trim()];
+                      setProfile({ ...profile, customJobTypes: newArr });
+                      setNewCustomJob('');
+                    }
+                  }}
+                  className="bg-gray-200 dark:bg-gray-600 p-2 rounded-xl text-gray-700 dark:text-white"
+                >
+                  <Plus size={20} />
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>

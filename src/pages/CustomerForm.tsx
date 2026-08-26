@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useAppStore } from '../store/useAppStore';
+import { PROFESSIONS } from '../constants/professions';
 
 const CustomerForm: React.FC = () => {
   const [searchParams] = useSearchParams();
   const phoneFromUrl = searchParams.get('phone') || '';
   
   const addJob = useAppStore(state => state.addJob);
+  const profile = useAppStore(state => state.profile);
   const [submitted, setSubmitted] = useState(false);
   
   const jobs = useAppStore(state => state.jobs);
@@ -24,6 +26,25 @@ const CustomerForm: React.FC = () => {
     timeWindow: '',
     jobType: ''
   });
+
+  // Calculate dynamic job types based on profession
+  const getJobTypes = () => {
+    let types: string[] = [];
+    if (profile?.profession && PROFESSIONS[profile.profession]) {
+      types = [...PROFESSIONS[profile.profession]];
+    } else {
+      // Fallback generic list if not selected
+      types = PROFESSIONS['כללי'] || ['פגישת ייעוץ', 'שירות טכני'];
+    }
+    
+    // Add custom job types if any
+    if (profile?.customJobTypes) {
+      types = [...types, ...profile.customJobTypes];
+    }
+    return types;
+  };
+  
+  const availableJobTypes = getJobTypes();
 
   // Calculate available time windows for the selected date
   const allTimeWindows = ['08:00-10:00', '10:00-12:00', '12:00-14:00', '14:00-16:00', '16:00-18:00'];
@@ -52,27 +73,38 @@ const CustomerForm: React.FC = () => {
 
   if (submitted) {
     return (
-      <div className="min-h-screen bg-offwhite flex items-center justify-center p-4">
-        <div className="bg-white p-8 rounded-2xl shadow-xl max-w-sm w-full text-center">
-          <div className="w-20 h-20 bg-sage text-white rounded-full flex items-center justify-center mx-auto mb-4 text-4xl">
-            ✓
-          </div>
-          <h2 className="text-2xl font-bold mb-2">תודה רבה!</h2>
-          <p className="text-gray-600">הפרטים התקבלו בהצלחה. ניפגש בקרוב.</p>
+      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
+        <div className="w-20 h-20 bg-sage-light text-white rounded-full flex items-center justify-center mb-6">
+          <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
         </div>
+        <h2 className="text-2xl font-bold mb-2 dark:text-white">בקשתך נשלחה בהצלחה!</h2>
+        <p className="text-gray-500 dark:text-gray-400">בעל המקצוע יאשר את חלון הזמן ויעדכן אותך בקרוב.</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-offwhite p-4 py-8">
-      <div className="max-w-md mx-auto bg-white rounded-2xl shadow-xl overflow-hidden">
-        <div className="bg-slate p-6 text-white text-center">
-          <h1 className="text-2xl font-bold">טופס קליטת לקוח</h1>
-          <p className="opacity-80 text-sm mt-1">נא למלא את הפרטים לקראת הגעתנו</p>
+    <div className="min-h-screen bg-gray-50 dark:bg-slate-dark py-8 px-4 font-sans">
+      <div className="max-w-md mx-auto bg-white dark:bg-gray-800 rounded-3xl shadow-xl overflow-hidden border border-gray-100 dark:border-gray-700">
+        <div className="bg-sage text-white p-6 text-center">
+          <h1 className="text-2xl font-bold mb-1">פתיחת קריאת שירות</h1>
+          <p className="opacity-90">{profile?.businessName || 'טופס קליטה'}</p>
         </div>
         
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
+          <div>
+            <label className="block text-sm font-medium mb-1">סוג השירות המבוקש *</label>
+            <select className="w-full p-3 border rounded-xl bg-gray-50 focus:ring-2 focus:ring-sage outline-none"
+              value={formData.jobType} onChange={e => setFormData({...formData, jobType: e.target.value})}
+              required
+            >
+              <option value="" disabled>בחר סוג שירות</option>
+              {availableJobTypes.map(type => (
+                <option key={type} value={type}>{type}</option>
+              ))}
+            </select>
+          </div>
+
           <div>
             <label className="block text-sm font-medium mb-1">שם מלא</label>
             <input required type="text" className="w-full p-3 border rounded-xl bg-gray-50 focus:ring-2 focus:ring-sage outline-none" 

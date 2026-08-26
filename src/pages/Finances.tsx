@@ -1,16 +1,14 @@
 import React, { useState } from 'react';
-import { type Expense, useAppStore } from '../store/useAppStore';
+import { useAppStore } from '../store/useAppStore';
 import { Phone, MessageCircle, Check, Plus } from 'lucide-react';
-import ExpenseModal from '../components/ExpenseModal';
 
 const Finances: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'debts' | 'expenses'>('debts');
   const jobs = useAppStore(state => state.jobs);
   const expenses = useAppStore(state => state.expenses);
   const updateJob = useAppStore(state => state.updateJob);
+  const openExpenseModal = useAppStore(state => state.openExpenseModal);
   
-  const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
-  const [isAddingExpense, setIsAddingExpense] = useState(false);
   const [expenseMonth, setExpenseMonth] = useState(new Date().toISOString().slice(0, 7)); // YYYY-MM
 
   const debts = jobs.filter(j => j.status === 'completed' && j.paymentMethod === 'unpaid');
@@ -80,7 +78,7 @@ const Finances: React.FC = () => {
       {activeTab === 'expenses' && (
         <div>
           <button 
-            onClick={() => setIsAddingExpense(true)}
+            onClick={() => openExpenseModal()}
             className="w-full bg-sage hover:bg-sage-dark text-white py-4 rounded-xl font-bold text-lg mb-6 flex items-center justify-center gap-2 transition-colors shadow-sm"
           >
             <Plus size={24} />
@@ -109,8 +107,8 @@ const Finances: React.FC = () => {
                 .map((expense) => (
                 <div 
                   key={expense.id} 
-                  onClick={() => setEditingExpense(expense)}
-                  className="bg-white dark:bg-gray-800 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 flex justify-between items-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                  className="bg-white dark:bg-gray-800 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 cursor-pointer hover:border-sage transition-colors"
+                  onClick={() => openExpenseModal(expense.id)}
                 >
                   <div className="flex items-center gap-4">
                     {expense.photoUrl ? (
@@ -136,15 +134,6 @@ const Finances: React.FC = () => {
             )}
           </div>
         </div>
-      )}
-
-      {/* Modals */}
-      {isAddingExpense && (
-        <ExpenseModal onClose={() => setIsAddingExpense(false)} />
-      )}
-      
-      {editingExpense && (
-        <ExpenseModal expense={editingExpense} onClose={() => setEditingExpense(null)} />
       )}
     </div>
   );
