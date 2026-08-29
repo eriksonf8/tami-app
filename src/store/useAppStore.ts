@@ -3,7 +3,7 @@ import { persist } from 'zustand/middleware';
 import { db } from '../lib/firebase';
 import { collection, doc, setDoc, updateDoc, deleteDoc, onSnapshot } from 'firebase/firestore';
 
-export type JobStatus = 'pending' | 'completed' | 'cancelled';
+export type JobStatus = 'pending' | 'approved' | 'completed' | 'cancelled';
 export type PaymentStatus = 'cash' | 'bit' | 'transfer' | 'unpaid' | 'none';
 
 export interface Job {

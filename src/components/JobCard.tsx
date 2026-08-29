@@ -8,9 +8,10 @@ interface JobCardProps {
   job: Job;
   onComplete: (job: Job) => void;
   onFollowUp: (job: Job) => void;
+  onEdit?: (job: Job) => void;
 }
 
-const JobCard: React.FC<JobCardProps> = ({ job, onComplete, onFollowUp }) => {
+const JobCard: React.FC<JobCardProps> = ({ job, onComplete, onFollowUp, onEdit }) => {
   const [expanded, setExpanded] = useState(false);
   const controls = useAnimation();
   const [isCompleted, setIsCompleted] = useState(job.status === 'completed');
@@ -71,7 +72,7 @@ const JobCard: React.FC<JobCardProps> = ({ job, onComplete, onFollowUp }) => {
         </div>
 
         <motion.div
-          drag={isCompleted ? false : "x"}
+          drag={isCompleted || job.status === 'pending' ? false : "x"}
           dragConstraints={{ left: -150, right: 150 }}
           dragElastic={0.2}
           onDragEnd={handleDragEnd}
@@ -182,14 +183,27 @@ const JobCard: React.FC<JobCardProps> = ({ job, onComplete, onFollowUp }) => {
                 </div>
               )}
               
-              <div className="flex flex-col gap-2 mt-2">
+              <div className="flex gap-2 mt-4 mb-2">
                 <button 
                   onClick={(e) => { e.stopPropagation(); onFollowUp(job); }} 
-                  className="w-full bg-yellow-100 hover:bg-yellow-200 text-yellow-800 dark:bg-yellow-900/30 dark:hover:bg-yellow-900/50 dark:text-yellow-400 py-3 rounded-lg font-bold flex items-center justify-center gap-2 transition-colors"
+                  className="flex-1 bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 py-3 rounded-xl font-bold flex justify-center items-center gap-2"
                 >
-                  <FileEdit size={20} />
-                  עדכון פולואפ / תשלום חלקי
+                  <FileEdit size={18} />
+                  פולו-אפ
                 </button>
+                
+                {onEdit && (
+                  <button 
+                    onClick={(e) => { e.stopPropagation(); onEdit(job); }} 
+                    className="flex-1 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 py-3 rounded-xl font-bold flex justify-center items-center gap-2"
+                  >
+                    <FileEdit size={18} />
+                    {job.status === 'pending' ? 'אשר עבודה' : 'ערוך זמנים'}
+                  </button>
+                )}
+              </div>
+
+              {job.status === 'approved' && (
                 <button 
                   onClick={async (e) => {
                     e.stopPropagation();
@@ -200,13 +214,13 @@ const JobCard: React.FC<JobCardProps> = ({ job, onComplete, onFollowUp }) => {
                       onComplete(job);
                       setShowConfetti(false);
                     }, 2500);
-                  }} 
-                  className="w-full bg-sage hover:bg-sage-dark text-white py-3 rounded-lg font-bold flex items-center justify-center gap-2 transition-colors"
+                  }}
+                  className="w-full bg-sage hover:bg-sage-dark text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-colors mt-2"
                 >
                   <CheckCircle2 size={20} />
-                  סיום עבודה (הכנסת תשלום)
+                  סיים עבודה וגבה תשלום
                 </button>
-              </div>
+              )}
             </div>
           )}
         </motion.div>

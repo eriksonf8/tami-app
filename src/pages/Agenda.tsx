@@ -3,7 +3,8 @@ import { useAppStore, type Job } from '../store/useAppStore';
 import JobCard from '../components/JobCard';
 import PaymentModal from '../components/PaymentModal';
 import FollowUpModal from '../components/FollowUpModal';
-import { ChevronRight, ChevronLeft, Shield, ShieldOff } from 'lucide-react';
+import EditJobModal from '../components/EditJobModal';
+import { ChevronRight, ChevronLeft, Shield, ShieldOff, ClipboardList, Calendar } from 'lucide-react';
 
 const Agenda: React.FC = () => {
   const jobs = useAppStore(state => state.jobs);
@@ -12,16 +13,24 @@ const Agenda: React.FC = () => {
   const toggleWorkingMode = useAppStore(state => state.toggleWorkingMode);
   const addToast = useAppStore(state => state.addToast);
   
+  const [activeTab, setActiveTab] = useState<'pending' | 'agenda'>('agenda');
+  
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [followUpJob, setFollowUpJob] = useState<Job | null>(null);
+  const [editingJob, setEditingJob] = useState<Job | null>(null);
   
   const [currentDate, setCurrentDate] = useState(new Date());
-
   const dateStr = currentDate.toISOString().split('T')[0];
-  const pendingJobs = jobs.filter(j => j.status === 'pending' && j.date === dateStr);
   
-  // Sort pending jobs by time window
-  pendingJobs.sort((a, b) => a.timeWindow.localeCompare(b.timeWindow));
+  // Pending tab jobs
+  const pendingJobs = jobs.filter(j => j.status === 'pending');
+  // Agenda tab jobs
+  const approvedJobs = jobs.filter(j => j.status === 'approved' && j.date === dateStr);
+  
+  // Sort approved jobs by time window
+  approvedJobs.sort((a, b) => a.timeWindow.localeCompare(b.timeWindow));
+  // Sort pending jobs by preferred date
+  pendingJobs.sort((a, b) => a.date.localeCompare(b.date));
 
   // Request push notification permission on mount
   useEffect(() => {
@@ -36,9 +45,9 @@ const Agenda: React.FC = () => {
     
     const interval = setInterval(() => {
       const now = new Date();
-      const todayPending = jobs.filter(j => j.status === 'pending' && j.date === todayStr);
+      const todayApproved = jobs.filter(j => j.status === 'approved' && j.date === todayStr);
       
-      for (const job of todayPending) {
+      for (const job of todayApproved) {
         const startHour = parseInt(job.timeWindow.split('-')[0].split(':')[0], 10);
         const startMin = parseInt(job.timeWindow.split('-')[0].split(':')[1], 10);
         
@@ -48,10 +57,8 @@ const Agenda: React.FC = () => {
         const diff = jobStart.getTime() - now.getTime();
         // Between 29 and 31 minutes (fire once per check window)
         if (diff > 29 * 60 * 1000 && diff < 31 * 60 * 1000) {
-          // In-app toast
           addToast(`🚗 תזכורת: בעוד 30 דקות - ${job.jobType} אצל ${job.customerName}`, 'warning');
           
-          // Push notification
           if ('Notification' in window && Notification.permission === 'granted') {
             const n = new Notification('תזכורת תנועה 🚗', {
               body: `בעוד 30 דקות: ${job.jobType} אצל ${job.customerName}\n${job.address}`,
@@ -80,10 +87,9 @@ const Agenda: React.FC = () => {
       <div className="mb-6 flex justify-between items-center">
         <div>
           <h2 className="text-2xl font-bold dark:text-white">שלום, {profile?.name?.split(' ')[0]} 👋</h2>
-          <p className="text-gray-500 dark:text-gray-400">לו"ז עבודה</p>
+          <p className="text-gray-500 dark:text-gray-400">ניהול עבודות</p>
         </div>
         
-        {/* Smart DND Toggle */}
         <button 
           onClick={toggleWorkingMode}
           className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-bold transition-all ${
@@ -97,75 +103,105 @@ const Agenda: React.FC = () => {
         </button>
       </div>
 
-      {/* Date Navigation */}
-      <div className="flex justify-between items-center bg-white dark:bg-gray-800 p-3 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
-        {/* In RTL, Right arrow means Previous, Left arrow means Next */}
-        <button onClick={() => changeDate(-1)} className="p-2 bg-gray-50 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-full text-slate dark:text-gray-300 transition-colors">
-          <ChevronRight size={20} />
-        </button>
-        
-        <div 
-          className="relative flex items-center justify-center flex-1 cursor-pointer"
-          onClick={(e) => {
-            const input = e.currentTarget.querySelector('input');
-            if (input && 'showPicker' in HTMLInputElement.prototype) {
-              try { input.showPicker(); } catch (err) {}
-            }
-          }}
+      {/* Tabs */}
+      <div className="flex bg-gray-200 dark:bg-gray-700 p-1 rounded-xl mb-6">
+        <button 
+          className={`flex-1 py-2 rounded-lg font-bold transition-all flex items-center justify-center gap-2 ${activeTab === 'pending' ? 'bg-white dark:bg-gray-800 shadow-sm text-sage' : 'text-gray-500 dark:text-gray-400'}`}
+          onClick={() => setActiveTab('pending')}
         >
-          {/* Invisible native date picker overlapping the text */}
-          <input 
-            type="date" 
-            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-            value={dateStr}
-            onChange={(e) => {
-              if (e.target.value) setCurrentDate(new Date(e.target.value));
-            }}
-            onClick={(e) => {
-              // Also trigger on direct input click just in case
-              if ('showPicker' in HTMLInputElement.prototype) {
-                try { (e.target as HTMLInputElement).showPicker(); } catch (err) {}
-              }
-            }}
-          />
-          <div className="font-bold text-lg dark:text-white flex items-center gap-2">
-            {currentDate.toLocaleDateString('he-IL', { weekday: 'long', day: 'numeric', month: 'numeric' })}
-            <span className="text-gray-400 text-sm">📅</span>
-          </div>
-        </div>
-
-        <button onClick={() => changeDate(1)} className="p-2 bg-gray-50 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-full text-slate dark:text-gray-300 transition-colors">
-          <ChevronLeft size={20} />
+          <ClipboardList size={18} />
+          ממתינים לאישור
+          {pendingJobs.length > 0 && (
+            <span className="bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full ml-1">
+              {pendingJobs.length}
+            </span>
+          )}
+        </button>
+        <button 
+          className={`flex-1 py-2 rounded-lg font-bold transition-all flex items-center justify-center gap-2 ${activeTab === 'agenda' ? 'bg-white dark:bg-gray-800 shadow-sm text-sage' : 'text-gray-500 dark:text-gray-400'}`}
+          onClick={() => setActiveTab('agenda')}
+        >
+          <Calendar size={18} />
+          יומן עבודה
         </button>
       </div>
 
-      {pendingJobs.length === 0 ? (
-        <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="text-5xl mb-4">☕</div>
-          <h3 className="text-lg font-bold dark:text-white mb-2">אין משימות פתוחות</h3>
-          <p className="text-gray-500 dark:text-gray-400 text-sm">הוסף עבודה חדשה דרך כפתור ה-+</p>
-        </div>
-      ) : (
-        <div className="space-y-4">
-          {/* Sorting visually by time window could go here */}
-          {pendingJobs.map(job => (
-            <JobCard 
-              key={job.id} 
-              job={job} 
-              onComplete={(completedJob) => setSelectedJob(completedJob)} 
-              onFollowUp={(job) => setFollowUpJob(job)}
-            />
-          ))}
-        </div>
+      {activeTab === 'agenda' && (
+        <>
+          {/* Date Navigation */}
+          <div className="flex justify-between items-center bg-white dark:bg-gray-800 p-3 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
+            <button onClick={() => changeDate(-1)} className="p-2 bg-gray-50 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-full text-slate dark:text-gray-300 transition-colors">
+              <ChevronRight size={20} />
+            </button>
+            
+            <div className="relative flex items-center justify-center flex-1 cursor-pointer">
+              <input 
+                type="date" 
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                value={dateStr}
+                onChange={(e) => { if (e.target.value) setCurrentDate(new Date(e.target.value)); }}
+              />
+              <div className="font-bold text-lg dark:text-white flex items-center gap-2">
+                {currentDate.toLocaleDateString('he-IL', { weekday: 'long', day: 'numeric', month: 'numeric' })}
+                <span className="text-gray-400 text-sm">📅</span>
+              </div>
+            </div>
+
+            <button onClick={() => changeDate(1)} className="p-2 bg-gray-50 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-full text-slate dark:text-gray-300 transition-colors">
+              <ChevronLeft size={20} />
+            </button>
+          </div>
+
+          {approvedJobs.length === 0 ? (
+            <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
+              <div className="text-5xl mb-4">☕</div>
+              <h3 className="text-lg font-bold dark:text-white mb-2">אין משימות להיום</h3>
+              <p className="text-gray-500 dark:text-gray-400 text-sm">זמן טוב לנוח או לעבור על ממתינים לאישור</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {approvedJobs.map(job => (
+                <JobCard 
+                  key={job.id} 
+                  job={job} 
+                  onComplete={(completedJob) => setSelectedJob(completedJob)} 
+                  onFollowUp={(job) => setFollowUpJob(job)}
+                  onEdit={(job) => setEditingJob(job)}
+                />
+              ))}
+            </div>
+          )}
+        </>
       )}
 
-      {selectedJob && (
-        <PaymentModal job={selectedJob} onClose={() => setSelectedJob(null)} />
+      {activeTab === 'pending' && (
+        <>
+          {pendingJobs.length === 0 ? (
+            <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
+              <div className="text-5xl mb-4">✨</div>
+              <h3 className="text-lg font-bold dark:text-white mb-2">הכל נקי</h3>
+              <p className="text-gray-500 dark:text-gray-400 text-sm">אין לקוחות שממתינים לאישור עבודה</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {pendingJobs.map(job => (
+                <JobCard 
+                  key={job.id} 
+                  job={job} 
+                  onComplete={() => {}} 
+                  onFollowUp={(job) => setFollowUpJob(job)}
+                  onEdit={(job) => setEditingJob(job)}
+                />
+              ))}
+            </div>
+          )}
+        </>
       )}
-      
-      {followUpJob && (
-        <FollowUpModal job={followUpJob} onClose={() => setFollowUpJob(null)} />
-      )}
+
+      {/* Modals */}
+      {selectedJob && <PaymentModal job={selectedJob} onClose={() => setSelectedJob(null)} />}
+      {followUpJob && <FollowUpModal job={followUpJob} onClose={() => setFollowUpJob(null)} />}
+      {editingJob && <EditJobModal job={editingJob} onClose={() => setEditingJob(null)} />}
     </div>
   );
 };
