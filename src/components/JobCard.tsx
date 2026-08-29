@@ -184,13 +184,15 @@ const JobCard: React.FC<JobCardProps> = ({ job, onComplete, onFollowUp, onEdit }
               )}
               
               <div className="flex gap-2 mt-4 mb-2">
-                <button 
-                  onClick={(e) => { e.stopPropagation(); onFollowUp(job); }} 
-                  className="flex-1 bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 py-3 rounded-xl font-bold flex justify-center items-center gap-2"
-                >
-                  <FileEdit size={18} />
-                  פולו-אפ
-                </button>
+                {job.status !== 'pending' && (
+                  <button 
+                    onClick={(e) => { e.stopPropagation(); onFollowUp(job); }} 
+                    className="flex-1 bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 py-3 rounded-xl font-bold flex justify-center items-center gap-2"
+                  >
+                    <FileEdit size={18} />
+                    פולו-אפ
+                  </button>
+                )}
                 
                 {onEdit && (
                   <button 
