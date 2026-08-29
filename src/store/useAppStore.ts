@@ -1,5 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { db } from '../lib/firebase';
+import { collection, doc, setDoc, updateDoc, deleteDoc, onSnapshot } from 'firebase/firestore';
 
 export type JobStatus = 'pending' | 'completed' | 'cancelled';
 export type PaymentStatus = 'cash' | 'bit' | 'transfer' | 'unpaid' | 'none';
@@ -86,6 +88,8 @@ interface AppState {
   editingExpenseId: string | null;
   openExpenseModal: (expenseId?: string) => void;
   closeExpenseModal: () => void;
+  
+  initializeFirebase: () => void;
 }
 
 export const useAppStore = create<AppState>()(
@@ -96,54 +100,103 @@ export const useAppStore = create<AppState>()(
       jobs: [],
       expenses: [],
       toasts: [],
-
-      setProfile: (profile) => set({ profile }),
       
-      updateSettings: (newSettings) => set((state) => ({
-        settings: { ...state.settings, ...newSettings }
-      })),
+      initializeFirebase: () => {
+        // Listen to jobs
+        onSnapshot(collection(db, 'jobs'), (snapshot) => {
+          const fetchedJobs = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as Job));
+          set({ jobs: fetchedJobs });
+        });
+        // Listen to expenses
+        onSnapshot(collection(db, 'expenses'), (snapshot) => {
+          const fetchedExpenses = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as Expense));
+          set({ expenses: fetchedExpenses });
+        });
+        // Listen to profile
+        onSnapshot(doc(db, 'system', 'profile'), (docSnap) => {
+          if (docSnap.exists()) {
+            set({ profile: docSnap.data() as UserProfile });
+          }
+        });
+        // Listen to settings
+        onSnapshot(doc(db, 'system', 'settings'), (docSnap) => {
+          if (docSnap.exists()) {
+            set({ settings: docSnap.data() as Settings });
+          }
+        });
+      },
 
-      addJob: (jobData) => set((state) => {
+      setProfile: (profile) => {
+        set({ profile });
+        setDoc(doc(db, 'system', 'profile'), profile).catch(console.error);
+      },
+      
+      updateSettings: (newSettings) => {
+        set((state) => {
+          const updated = { ...state.settings, ...newSettings };
+          setDoc(doc(db, 'system', 'settings'), updated).catch(console.error);
+          return { settings: updated };
+        });
+      },
+
+      addJob: (jobData) => {
+        const id = Date.now().toString();
         const newJob = {
           ...jobData,
-          id: Date.now().toString(),
-          status: 'pending' as const
+          id,
+          status: 'pending' as const,
+          paymentMethod: 'unpaid' as const
         };
+        
+        // Optimistic update
+        set((state) => ({ jobs: [...state.jobs, newJob] }));
+        
+        // Save to Firebase
+        setDoc(doc(db, 'jobs', id), newJob).catch(console.error);
+
         // Add toast when a job is added (New request simulation)
         setTimeout(() => {
           useAppStore.getState().addToast(`עבודה חדשה התקבלה: ${jobData.jobType} אצל ${jobData.customerName}`, 'info');
         }, 500);
+      },
+
+      updateJob: (id, updates) => {
+        set((state) => {
+          const job = state.jobs.find(j => j.id === id);
+          if (job && updates.status === 'completed' && job.status !== 'completed') {
+            setTimeout(() => useAppStore.getState().addToast('כל הכבוד! עבודה נוספת הושלמה 💪', 'success'), 300);
+          }
+          if (job && updates.paymentMethod === 'bit' && job.paymentMethod === 'unpaid') {
+            setTimeout(() => useAppStore.getState().addToast('איזה יופי! החוב נסגר בהצלחה 💸', 'success'), 300);
+          }
+          return {
+            jobs: state.jobs.map(j => j.id === id ? { ...j, ...updates } : j)
+          };
+        });
         
-        return { jobs: [...state.jobs, newJob] };
-      }),
+        updateDoc(doc(db, 'jobs', id), updates).catch(console.error);
+      },
 
-      updateJob: (id, updates) => set((state) => {
-        const job = state.jobs.find(j => j.id === id);
-        if (job && updates.status === 'completed' && job.status !== 'completed') {
-          setTimeout(() => useAppStore.getState().addToast('כל הכבוד! עבודה נוספת הושלמה 💪', 'success'), 300);
-        }
-        if (job && updates.paymentMethod === 'bit' && job.paymentMethod === 'unpaid') {
-          setTimeout(() => useAppStore.getState().addToast('איזה יופי! החוב נסגר בהצלחה 💸', 'success'), 300);
-        }
-        return {
-          jobs: state.jobs.map(j => j.id === id ? { ...j, ...updates } : j)
-        };
-      }),
+      addExpense: (expenseData) => {
+        const id = Date.now().toString();
+        const newExpense = { ...expenseData, id };
+        set((state) => ({ expenses: [...state.expenses, newExpense] }));
+        setDoc(doc(db, 'expenses', id), newExpense).catch(console.error);
+      },
 
-      addExpense: (expenseData) => set((state) => ({
-        expenses: [...state.expenses, {
-          ...expenseData,
-          id: Date.now().toString()
-        }]
-      })),
+      updateExpense: (id, updates) => {
+        set((state) => ({
+          expenses: state.expenses.map(exp => exp.id === id ? { ...exp, ...updates } : exp)
+        }));
+        updateDoc(doc(db, 'expenses', id), updates).catch(console.error);
+      },
 
-      updateExpense: (id, updates) => set((state) => ({
-        expenses: state.expenses.map(exp => exp.id === id ? { ...exp, ...updates } : exp)
-      })),
-
-      removeExpense: (id) => set((state) => ({
-        expenses: state.expenses.filter(e => e.id !== id)
-      })),
+      removeExpense: (id) => {
+        set((state) => ({
+          expenses: state.expenses.filter(e => e.id !== id)
+        }));
+        deleteDoc(doc(db, 'expenses', id)).catch(console.error);
+      },
       
       addToast: (message, type = 'info') => set((state) => {
         // Smart DND: block non-urgent notifications if working

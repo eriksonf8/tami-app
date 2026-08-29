@@ -21,6 +21,11 @@ const App: React.FC = () => {
   const darkMode = useAppStore(state => state.settings.darkMode);
   const toasts = useAppStore(state => state.toasts);
   const removeToast = useAppStore(state => state.removeToast);
+  const initializeFirebase = useAppStore(state => state.initializeFirebase);
+
+  useEffect(() => {
+    initializeFirebase();
+  }, [initializeFirebase]);
 
   useEffect(() => {
     if (darkMode) {
