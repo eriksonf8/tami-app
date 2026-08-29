@@ -200,7 +200,7 @@ const JobCard: React.FC<JobCardProps> = ({ job, onComplete, onFollowUp, onEdit }
                     className="flex-1 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 py-3 rounded-xl font-bold flex justify-center items-center gap-2"
                   >
                     <FileEdit size={18} />
-                    {job.status === 'pending' ? 'אשר עבודה' : 'ערוך זמנים'}
+                    {job.status === 'pending' ? 'עריכה ואישור' : 'ערוך זמנים'}
                   </button>
                 )}
               </div>

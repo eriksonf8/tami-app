@@ -63,7 +63,7 @@ const EditJobModal: React.FC<EditJobModalProps> = ({ job, onClose }) => {
           {job.status === 'pending' && (
             <button 
               onClick={handleApprove}
-              className="w-full bg-sage hover:bg-sage-dark text-white p-4 rounded-xl font-bold flex justify-center items-center gap-2 transition-colors"
+              className="w-full bg-sage hover:bg-sage-dark text-white p-4 rounded-xl font-bold flex justify-center items-center gap-2 transition-colors shadow-sm"
             >
               <CheckCircle2 size={20} />
               אשר עבודה וקבע ביומן
@@ -71,10 +71,22 @@ const EditJobModal: React.FC<EditJobModalProps> = ({ job, onClose }) => {
           )}
           <button 
             onClick={handleSave}
-            className="w-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-white p-4 rounded-xl font-bold flex justify-center items-center gap-2 transition-colors"
+            className="w-full bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 text-blue-700 dark:text-blue-400 p-4 rounded-xl font-bold flex justify-center items-center gap-2 transition-colors"
           >
             <Save size={20} />
-            שמור שינויים
+            {job.status === 'pending' ? 'שמור זמנים (השאר בהמתנה)' : 'שמור שינויים'}
+          </button>
+          <button 
+            onClick={() => {
+              if(window.confirm('האם אתה בטוח שברצונך לבטל/למחוק עבודה זו?')) {
+                updateJob(job.id, { status: 'cancelled' });
+                onClose();
+              }
+            }}
+            className="w-full bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/40 text-red-600 dark:text-red-400 p-4 rounded-xl font-bold flex justify-center items-center gap-2 transition-colors mt-2"
+          >
+            <X size={20} />
+            בטל / דחה עבודה
           </button>
         </div>
       </div>
