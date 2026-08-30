@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useAppStore } from '../store/useAppStore';
-import { Phone, MessageCircle, Check, Receipt, ChevronDown } from 'lucide-react';
+import { Phone, MessageCircle, Check, Receipt, ChevronDown, CalendarDays } from 'lucide-react';
 
 const Finances: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'debts' | 'expenses'>('expenses');
@@ -10,6 +10,7 @@ const Finances: React.FC = () => {
   const openExpenseModal = useAppStore(state => state.openExpenseModal);
   
   const [expenseMonth, setExpenseMonth] = useState(new Date().toISOString().slice(0, 7)); // YYYY-MM
+  const monthInputRef = useRef<HTMLInputElement>(null);
 
   const debts = jobs.filter(j => j.status === 'completed' && j.paymentMethod === 'unpaid');
 
@@ -29,14 +30,24 @@ const Finances: React.FC = () => {
   };
 
   return (
-    <div className="pb-24 pt-4">
-      <div className="flex flex-col items-start mb-8">
-        <h2 className="text-5xl font-extrabold text-[#0f172a] dark:text-white mb-4 tracking-tight">כספים</h2>
+    <div className="pb-24 pt-6">
+      {/* Header section - Centered */}
+      <div className="flex flex-col items-center mb-8">
+        <h2 className="text-4xl font-extrabold text-[#276749] dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 px-10 py-3 rounded-3xl mb-5 tracking-tight shadow-sm border border-emerald-100 dark:border-emerald-800/50">
+          כספים
+        </h2>
         
-        <div className="relative cursor-pointer flex items-center gap-1.5 text-gray-500 hover:text-gray-800 transition-colors">
-          <ChevronDown size={16} />
-          <span className="text-lg font-medium">{getMonthName(expenseMonth)}</span>
+        <div 
+          className="relative cursor-pointer flex items-center gap-2 text-slate-600 dark:text-slate-300 bg-white dark:bg-gray-800 px-5 py-2.5 rounded-full shadow-sm border border-gray-100 dark:border-gray-700 hover:border-emerald-200 transition-colors"
+          onClick={() => {
+            try { monthInputRef.current?.showPicker(); } catch (e) {}
+          }}
+        >
+          <CalendarDays size={16} className="text-[#276749]" />
+          <span className="text-lg font-bold">{getMonthName(expenseMonth)}</span>
+          <ChevronDown size={16} className="text-gray-400" />
           <input 
+            ref={monthInputRef}
             type="month" 
             value={expenseMonth}
             onChange={(e) => setExpenseMonth(e.target.value)}
@@ -45,25 +56,19 @@ const Finances: React.FC = () => {
         </div>
       </div>
       
-      {/* Tabs */}
-      <div className="flex justify-between border-b border-gray-100 dark:border-gray-800 mb-8 relative px-2">
+      {/* Tabs - Colored Segmented Control */}
+      <div className="flex bg-gray-100 dark:bg-gray-800 p-1.5 rounded-2xl mb-8 shadow-inner">
         <button 
-          className={`pb-3 px-2 font-bold text-sm transition-colors relative ${activeTab === 'debts' ? 'text-[#0f172a] dark:text-white' : 'text-gray-400 dark:text-gray-500 hover:text-gray-600'}`}
+          className={`flex-1 py-3 px-2 font-bold text-sm transition-all rounded-xl ${activeTab === 'debts' ? 'bg-white dark:bg-gray-700 shadow-md text-red-600 dark:text-red-400' : 'text-gray-500 hover:text-gray-700'}`}
           onClick={() => setActiveTab('debts')}
         >
           חובות פתוחים ({debts.length})
-          {activeTab === 'debts' && (
-            <div className="absolute bottom-[-1px] left-0 right-0 h-[2px] bg-[#0f172a] dark:bg-white rounded-t-full"></div>
-          )}
         </button>
         <button 
-          className={`pb-3 px-2 font-bold text-sm transition-colors relative ${activeTab === 'expenses' ? 'text-[#0f172a] dark:text-white' : 'text-gray-400 dark:text-gray-500 hover:text-gray-600'}`}
+          className={`flex-1 py-3 px-2 font-bold text-sm transition-all rounded-xl ${activeTab === 'expenses' ? 'bg-white dark:bg-gray-700 shadow-md text-[#276749] dark:text-emerald-400' : 'text-gray-500 hover:text-gray-700'}`}
           onClick={() => setActiveTab('expenses')}
         >
           הוצאות החודש
-          {activeTab === 'expenses' && (
-            <div className="absolute bottom-[-1px] left-0 right-0 h-[2px] bg-[#0f172a] dark:bg-white rounded-t-full"></div>
-          )}
         </button>
       </div>
 
