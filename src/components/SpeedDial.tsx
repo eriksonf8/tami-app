@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Receipt, FileText } from 'lucide-react';
+import { Plus, Receipt, UserPlus, ChevronLeft, X } from 'lucide-react';
 import { useAppStore } from '../store/useAppStore';
 
 interface SpeedDialProps {
@@ -13,28 +13,8 @@ const SpeedDial: React.FC<SpeedDialProps> = ({ onOpenCrm }) => {
 
   const toggleOpen = () => setIsOpen(!isOpen);
 
-  // Actions for the dial
-  const actions = [
-    {
-      icon: <Receipt size={20} />,
-      label: "הוצאה חדשה",
-      onClick: () => {
-        setIsOpen(false);
-        openExpenseModal();
-      }
-    },
-    {
-      icon: <FileText size={20} />,
-      label: "שליחת טופס לקוח",
-      onClick: () => {
-        setIsOpen(false);
-        onOpenCrm();
-      }
-    }
-  ];
-
   return (
-    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center">
+    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[60] flex flex-col items-center">
       <AnimatePresence>
         {isOpen && (
           <>
@@ -43,40 +23,70 @@ const SpeedDial: React.FC<SpeedDialProps> = ({ onOpenCrm }) => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/40 z-40"
+              className="fixed inset-0 bg-slate-900/20 backdrop-blur-sm z-40"
               onClick={() => setIsOpen(false)}
             />
             
-            {/* The vertical buttons */}
-            <div className="absolute bottom-16 flex flex-col items-center gap-3 z-50 mb-2">
-              {actions.map((action, index) => (
-                <motion.button
-                  key={index}
-                  initial={{ opacity: 0, y: 20, scale: 0.8 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: 20, scale: 0.8 }}
-                  transition={{ delay: index * 0.05, type: 'spring', stiffness: 300, damping: 20 }}
-                  onClick={action.onClick}
-                  className="flex items-center gap-3 bg-white dark:bg-gray-800 text-sage p-3 rounded-full shadow-xl border border-gray-100 dark:border-gray-700 w-max pr-5 pl-4 group hover:bg-sage hover:text-white transition-colors"
-                >
-                  <span className="font-bold text-sm">{action.label}</span>
-                  <div className="bg-sage/10 group-hover:bg-white/20 p-2 rounded-full">
-                    {action.icon}
+            {/* The Menu Card */}
+            <motion.div 
+              initial={{ opacity: 0, y: 50, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 20, scale: 0.95 }}
+              transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+              className="absolute bottom-20 w-[90vw] max-w-sm bg-slate-50 dark:bg-gray-800 rounded-3xl p-6 shadow-2xl z-50 flex flex-col gap-4 border border-white/50 dark:border-gray-700"
+            >
+              <div className="text-center mb-2">
+                <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-1">פעולה מהירה</h3>
+                <p className="text-sm text-slate-500 dark:text-gray-400">בחר את הפעולה שברצונך לבצע</p>
+              </div>
+
+              <button 
+                onClick={() => { setIsOpen(false); onOpenCrm(); }}
+                className="w-full bg-[#276749] text-white p-4 rounded-2xl flex items-center justify-between transition-transform active:scale-[0.98] shadow-md shadow-[#276749]/20"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="bg-white/20 p-3 rounded-xl backdrop-blur-md">
+                    <UserPlus size={24} />
                   </div>
-                </motion.button>
-              ))}
-            </div>
+                  <div className="text-right">
+                    <div className="font-bold text-lg leading-tight">יצירת לקוח חדש</div>
+                    <div className="text-xs text-white/80 font-medium">הוסף פרטי התקשרות</div>
+                  </div>
+                </div>
+                <ChevronLeft className="text-white/70" size={20} />
+              </button>
+
+              <button 
+                onClick={() => { setIsOpen(false); openExpenseModal(); }}
+                className="w-full bg-[#B91C1C] text-white p-4 rounded-2xl flex items-center justify-between transition-transform active:scale-[0.98] shadow-md shadow-[#B91C1C]/20"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="bg-white/20 p-3 rounded-xl backdrop-blur-md">
+                    <Receipt size={24} />
+                  </div>
+                  <div className="text-right">
+                    <div className="font-bold text-lg leading-tight">יצירת הוצאה חדשה</div>
+                    <div className="text-xs text-white/80 font-medium">תעד הוצאה עסקית</div>
+                  </div>
+                </div>
+                <ChevronLeft className="text-white/70" size={20} />
+              </button>
+            </motion.div>
           </>
         )}
       </AnimatePresence>
 
-      {/* Main FAB */}
+      {/* Main FAB - Rotated Square Design */}
       <motion.button 
         onClick={toggleOpen}
-        animate={{ rotate: isOpen ? 45 : 0 }}
-        className="bg-sage text-white p-4 rounded-full shadow-[0_4px_20px_rgba(46,125,119,0.4)] flex items-center justify-center relative z-50"
+        className={`w-14 h-14 rounded-2xl shadow-xl flex items-center justify-center relative z-50 transition-colors duration-300 bg-[#0f172a] rotate-45`}
       >
-        <Plus size={32} />
+        <motion.div 
+          animate={{ rotate: isOpen ? 45 : -45 }}
+          className="text-white flex items-center justify-center"
+        >
+          {isOpen ? <X size={28} /> : <Plus size={28} />}
+        </motion.div>
       </motion.button>
     </div>
   );
