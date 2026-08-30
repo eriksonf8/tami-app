@@ -44,6 +44,7 @@ export interface UserProfile {
   taxCeiling: number;
   profession?: string;
   customJobTypes?: string[];
+  photoUrl?: string;
 }
 
 export interface Settings {
