@@ -165,6 +165,17 @@ const Settings: React.FC = () => {
             alert(`נוספו ${mockJobs.length} עבודות בדיקה בהצלחה!`);
           }}
         />
+        <SettingsRow 
+          icon={Trash2} 
+          title="מחיקת כל הנתונים באפליקציה" 
+          isDestructive={true}
+          control={<ChevronLeft size={20} className="text-red-400" />}
+          onClick={() => {
+            if (window.confirm('האם אתה בטוח שברצונך למחוק את כל הנתונים? פעולה זו תמחק לצמיתות את כל העבודות וההוצאות (לא ניתן לשחזר)')) {
+              useAppStore.getState().clearApp();
+            }
+          }}
+        />
       </div>
 
       {/* Legal & Privacy Card */}
@@ -181,18 +192,7 @@ const Settings: React.FC = () => {
           control={<ChevronLeft size={20} className="text-slate-400" />}
           onClick={() => setShowPrivacy(true)}
         />
-        <SettingsRow 
-          icon={Trash2} 
-          title="מחיקת חשבון" 
-          isDestructive={true}
-          control={<ChevronLeft size={20} className="text-red-400" />}
-          onClick={() => {
-            if (window.confirm('האם אתה בטוח שברצונך למחוק את החשבון וכל הנתונים לצמיתות? (לא ניתן לביטול)')) {
-              useAppStore.setState({ jobs: [], expenses: [], profile: null as any });
-            }
-          }}
-        />
-      </div>
+        </div>
 
       {/* Logout Button */}
       <button 

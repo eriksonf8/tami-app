@@ -100,8 +100,9 @@ const JobCard: React.FC<JobCardProps> = ({ job, onComplete, onFollowUp, onEdit }
           </div>
 
           {!expanded && !isCompleted && (
-            <div className="flex gap-2 mt-4 pt-4 border-t border-gray-100 dark:border-gray-700 relative">
-              <a href={`tel:${job.phone}`} onClick={e => e.stopPropagation()} className="flex-1 bg-[#b8ead2] hover:bg-[#a6e2c3] dark:bg-emerald-900/30 dark:hover:bg-emerald-900/50 text-[#185536] dark:text-emerald-400 rounded-xl py-3.5 flex flex-col items-center justify-center gap-1.5 font-bold transition-colors">
+            <div className="flex flex-col gap-2 mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
+              <div className="flex gap-2">
+              <a href={`tel:${job.phone}`} onClick={e => e.stopPropagation()} className="flex-1 bg-blue-100 hover:bg-blue-200 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 text-blue-800 dark:text-blue-400 rounded-xl py-3.5 flex flex-col items-center justify-center gap-1.5 font-bold transition-colors">
                 <Phone size={22} />
                 <span className="text-sm">חייג</span>
               </a>
@@ -113,9 +114,9 @@ const JobCard: React.FC<JobCardProps> = ({ job, onComplete, onFollowUp, onEdit }
                 <Navigation size={22} />
                 <span className="text-sm">נווט</span>
               </button>
-
+              </div>
               {showQuickReplies && (
-                <div className="absolute bottom-full left-0 mb-2 w-48 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl shadow-xl overflow-hidden z-20">
+                <div className="w-full bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl overflow-hidden shadow-sm mt-1">
                   <button onClick={(e) => { e.stopPropagation(); sendWhatsApp("אני בדרך אליך"); }} className="w-full text-right px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 text-sm border-b border-gray-100 dark:border-gray-700 dark:text-white">🚗 אני בדרך אליך</button>
                   <button onClick={(e) => { e.stopPropagation(); sendWhatsApp("מתעכב כמה דקות, סליחה!"); }} className="w-full text-right px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 text-sm border-b border-gray-100 dark:border-gray-700 dark:text-white">⏳ מתעכב כמה דקות</button>
                   <button onClick={(e) => { e.stopPropagation(); sendWhatsApp(""); }} className="w-full text-right px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 text-sm dark:text-white font-bold">💬 פתח שיחה חופשית</button>
@@ -172,8 +173,9 @@ const JobCard: React.FC<JobCardProps> = ({ job, onComplete, onFollowUp, onEdit }
               </div>
 
               {/* Top Actions Row */}
-              <div className="flex gap-2 mb-3 relative">
-                <a href={`tel:${job.phone}`} onClick={e => e.stopPropagation()} className="flex-1 bg-[#b8ead2] hover:bg-[#a6e2c3] dark:bg-emerald-900/30 dark:hover:bg-emerald-900/50 text-[#185536] dark:text-emerald-400 rounded-xl py-3.5 flex flex-col items-center justify-center gap-1.5 font-bold transition-colors">
+              <div className="flex flex-col gap-2 mb-3">
+              <div className="flex gap-2">
+                <a href={`tel:${job.phone}`} onClick={e => e.stopPropagation()} className="flex-1 bg-blue-100 hover:bg-blue-200 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 text-blue-800 dark:text-blue-400 rounded-xl py-3.5 flex flex-col items-center justify-center gap-1.5 font-bold transition-colors">
                   <Phone size={22} />
                   <span className="text-sm">חייג</span>
                 </a>
@@ -185,10 +187,10 @@ const JobCard: React.FC<JobCardProps> = ({ job, onComplete, onFollowUp, onEdit }
                   <Navigation size={22} />
                   <span className="text-sm">נווט</span>
                 </button>
-
-                {/* WhatsApp Quick Replies Inline Menu */}
-                {showQuickReplies && (
-                  <div className="absolute bottom-full left-0 mb-2 w-48 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl shadow-xl overflow-hidden z-20">
+              </div>
+              {/* WhatsApp Quick Replies Inline Menu */}
+              {showQuickReplies && (
+                  <div className="w-full bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl overflow-hidden shadow-sm mt-1">
                     <button onClick={(e) => { e.stopPropagation(); sendWhatsApp("אני בדרך אליך"); }} className="w-full text-right px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 text-sm border-b border-gray-100 dark:border-gray-700 dark:text-white">🚗 אני בדרך אליך</button>
                     <button onClick={(e) => { e.stopPropagation(); sendWhatsApp("מתעכב כמה דקות, סליחה!"); }} className="w-full text-right px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 text-sm border-b border-gray-100 dark:border-gray-700 dark:text-white">⏳ מתעכב כמה דקות</button>
                     <button onClick={(e) => { e.stopPropagation(); sendWhatsApp(""); }} className="w-full text-right px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 text-sm dark:text-white font-bold">💬 פתח שיחה חופשית</button>

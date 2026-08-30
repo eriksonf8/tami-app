@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { db } from '../lib/firebase';
-import { collection, doc, setDoc, updateDoc, deleteDoc, onSnapshot } from 'firebase/firestore';
+import { collection, doc, setDoc, updateDoc, deleteDoc, onSnapshot, getDocs } from 'firebase/firestore';
 
 export type JobStatus = 'pending' | 'approved' | 'completed' | 'cancelled';
 export type PaymentStatus = 'cash' | 'bit' | 'transfer' | 'unpaid' | 'none';
@@ -112,6 +112,8 @@ interface AppState {
   closeExpenseModal: () => void;
   
   initializeFirebase: () => void;
+  addTestJobs: (jobs: Job[]) => void;
+  clearApp: () => void;
 }
 
 export const useAppStore = create<AppState>()(
@@ -253,7 +255,33 @@ export const useAppStore = create<AppState>()(
       isExpenseModalOpen: false,
       editingExpenseId: null,
       openExpenseModal: (expenseId) => set({ isExpenseModalOpen: true, editingExpenseId: expenseId || null }),
-      closeExpenseModal: () => set({ isExpenseModalOpen: false, editingExpenseId: null })
+      closeExpenseModal: () => set({ isExpenseModalOpen: false, editingExpenseId: null }),
+
+      addTestJobs: (jobs) => {
+        jobs.forEach(job => {
+          setDoc(doc(db, 'jobs', job.id), job).catch(console.error);
+        });
+        useAppStore.getState().addToast('נוספו ' + jobs.length + ' עבודות בדיקה בהצלחה!', 'success');
+      },
+
+      clearApp: async () => {
+        set({ jobs: [], expenses: [], profile: null as any });
+        try {
+          const jobsRef = collection(db, 'jobs');
+          const qJobs = await getDocs(jobsRef);
+          qJobs.forEach(d => deleteDoc(d.ref));
+          
+          const expRef = collection(db, 'expenses');
+          const qExp = await getDocs(expRef);
+          qExp.forEach(d => deleteDoc(d.ref));
+          
+          await deleteDoc(doc(db, 'system', 'profile'));
+          useAppStore.getState().addToast('כל הנתונים נמחקו בהצלחה!', 'success');
+        } catch (error) {
+          console.error("Error clearing app data:", error);
+          useAppStore.getState().addToast('שגיאה במחיקת הנתונים', 'warning');
+        }
+      }
     }),
     {
       name: 'tami-app-storage',
