@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAppStore } from '../store/useAppStore';
-import { ChevronRight, ChevronLeft, ArrowRight, Calendar as CalendarIcon, TrendingUp, FileText, Trophy, PieChart } from 'lucide-react';
+import { ChevronRight, ChevronLeft, ArrowRight, Calendar as CalendarIcon, TrendingUp, FileText, Trophy, PieChart, Users, Sparkles } from 'lucide-react';
 
 type Period = 'daily' | 'weekly' | 'monthly' | 'quarterly' | 'yearly';
 
@@ -170,17 +170,25 @@ const Dashboard: React.FC = () => {
   const insights = generateInsights(metrics, viewMode);
 
   return (
-    <div className="pb-24">
+    <div className="pb-24 pt-4 px-2">
       {/* Header Back Button */}
-      <button onClick={() => setViewMode('main')} className="flex items-center gap-2 text-gray-500 mb-6 font-bold hover:text-gray-700 dark:hover:text-gray-300">
-        <ArrowRight size={20} />
-        חזור ללוח הראשי
-      </button>
+      <div className="flex justify-end mb-6">
+        <button 
+          onClick={() => setViewMode('main')} 
+          className="flex items-center gap-2 text-slate-600 dark:text-slate-300 font-bold hover:text-slate-900 dark:hover:text-white transition-colors"
+        >
+          חזור ללוח הראשי
+          <ArrowRight size={18} />
+        </button>
+      </div>
 
       {/* TIME NAVIGATION */}
-      <div className="flex justify-between items-center bg-white dark:bg-gray-800 p-3 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
-        <button onClick={() => shiftDate(-1)} className="p-2 bg-gray-50 dark:bg-gray-700 hover:bg-gray-200 rounded-full text-slate dark:text-gray-300 transition-colors">
-          <ChevronRight size={20} />
+      <div className="flex justify-between items-center bg-white dark:bg-gray-800 py-4 px-5 rounded-3xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] mb-6">
+        <button 
+          onClick={() => shiftDate(-1)} 
+          className="p-1.5 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors"
+        >
+          <ChevronRight size={22} />
         </button>
         
         <div className="relative flex items-center justify-center flex-1 cursor-pointer group">
@@ -191,63 +199,84 @@ const Dashboard: React.FC = () => {
             onChange={(e) => { if (e.target.value) setReferenceDate(new Date(e.target.value)); }}
             onClick={(e) => { if ('showPicker' in HTMLInputElement.prototype) { try { (e.target as HTMLInputElement).showPicker(); } catch (err) {} } }}
           />
-          <div className="font-bold text-lg dark:text-white flex items-center gap-2">
+          <div className="font-extrabold text-[19px] text-slate-900 dark:text-white flex items-center gap-2.5">
             {formatDateRangeStr(range.start, range.end, viewMode)}
-            <CalendarIcon size={16} className="text-gray-400 group-hover:text-sage transition-colors" />
+            <CalendarIcon size={20} className="text-slate-500 group-hover:text-[#276749] transition-colors" />
           </div>
         </div>
 
-        <button onClick={() => shiftDate(1)} className="p-2 bg-gray-50 dark:bg-gray-700 hover:bg-gray-200 rounded-full text-slate dark:text-gray-300 transition-colors">
-          <ChevronLeft size={20} />
+        <button 
+          onClick={() => shiftDate(1)} 
+          className="p-1.5 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors"
+        >
+          <ChevronLeft size={22} />
         </button>
       </div>
 
       {/* CORE METRICS */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 mb-6 p-6">
-        <div className="text-center mb-8">
-          <p className="text-sm text-gray-500 mb-1">הכנסות נטו (רווח)</p>
-          <p className={`text-6xl font-black tracking-tight ${metrics.profit >= 0 ? 'text-sage' : 'text-red-500'}`}>
-            ₪{metrics.profit}
+      <div className="bg-white dark:bg-gray-800 rounded-[2rem] shadow-[0_4px_25px_rgba(0,0,0,0.04)] mb-6 p-8">
+        <div className="text-center mb-10">
+          <p className="text-base text-slate-500 font-medium mb-1">הכנסות נטו (רווח)</p>
+          <p className={`text-6xl font-black tracking-tight ${metrics.profit === 0 ? 'text-slate-700 dark:text-slate-300' : metrics.profit > 0 ? 'text-[#276749] dark:text-emerald-400' : 'text-red-600 dark:text-red-500'}`}>
+            ₪{Math.abs(metrics.profit).toLocaleString()}
+            {metrics.profit < 0 ? '-' : ''}
           </p>
         </div>
         
-        <div className="grid grid-cols-3 gap-3">
-          <div className="bg-gray-50 dark:bg-gray-700 p-3 rounded-xl text-center">
-            <p className="text-xs text-gray-500 mb-1">הכנסות 🟢</p>
-            <p className="text-xl font-bold dark:text-white">₪{metrics.income}</p>
+        <div className="bg-slate-50 dark:bg-gray-700/50 rounded-2xl p-4 flex justify-between items-center divide-x divide-x-reverse divide-slate-200 dark:divide-slate-600">
+          <div className="flex-1 text-center px-2">
+            <div className="flex items-center justify-center gap-1.5 mb-1.5">
+              <div className="w-2 h-2 rounded-full bg-[#276749]"></div>
+              <p className="text-[13px] font-bold text-slate-600 dark:text-slate-300">הכנסות</p>
+            </div>
+            <p className="text-lg font-bold text-slate-900 dark:text-white">₪{metrics.income.toLocaleString()}</p>
           </div>
-          <div className="bg-gray-50 dark:bg-gray-700 p-3 rounded-xl text-center">
-            <p className="text-xs text-gray-500 mb-1">הוצאות 🔴</p>
-            <p className="text-xl font-bold dark:text-white">₪{metrics.cost}</p>
+          
+          <div className="flex-1 text-center px-2">
+            <div className="flex items-center justify-center gap-1.5 mb-1.5">
+              <div className="w-2 h-2 rounded-full bg-red-500"></div>
+              <p className="text-[13px] font-bold text-slate-600 dark:text-slate-300">הוצאות</p>
+            </div>
+            <p className="text-lg font-bold text-slate-900 dark:text-white">₪{metrics.cost.toLocaleString()}</p>
           </div>
-          <div className="bg-gray-50 dark:bg-gray-700 p-3 rounded-xl text-center">
-            <p className="text-xs text-gray-500 mb-1">לקוחות 👥</p>
-            <p className="text-xl font-bold dark:text-white">{metrics.periodJobs.length}</p>
+          
+          <div className="flex-1 text-center px-2">
+            <div className="flex items-center justify-center gap-1.5 mb-1.5">
+              <Users size={12} className="text-slate-600 dark:text-slate-400" />
+              <p className="text-[13px] font-bold text-slate-600 dark:text-slate-300">לקוחות</p>
+            </div>
+            <p className="text-lg font-bold text-slate-900 dark:text-white">{metrics.periodJobs.length}</p>
           </div>
         </div>
       </div>
 
       {/* BUSINESS INSIGHTS */}
-      <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-900/50 rounded-2xl p-5 mb-6">
-        <h3 className="font-bold text-blue-800 dark:text-blue-300 flex items-center gap-2 mb-3">
-          <TrendingUp size={20} />
+      <div className="bg-gradient-to-br from-[#EEF2FF] to-[#E0E7FF] dark:from-indigo-900/30 dark:to-indigo-900/10 rounded-[2rem] p-6 mb-6 border border-indigo-100 dark:border-indigo-800/30 shadow-[0_4px_20px_rgba(99,102,241,0.08)]">
+        <h3 className="text-xl font-extrabold text-[#1e1b4b] dark:text-indigo-200 flex items-center justify-center gap-2.5 mb-5">
+          <Sparkles size={22} className="text-indigo-600 dark:text-indigo-400" />
           תובנות והמלצות
         </h3>
-        <ul className="space-y-3">
-          {insights.map((insight, idx) => (
-            <li key={idx} className="text-blue-900 dark:text-blue-200 text-sm leading-relaxed bg-white/50 dark:bg-black/20 p-3 rounded-lg">
-              {insight}
-            </li>
-          ))}
+        <ul className="space-y-3.5">
+          {insights.map((insight, idx) => {
+            const emojiMatch = insight.match(/^(⚠️|💡|📈)/);
+            const emoji = emojiMatch ? emojiMatch[1] : '💡';
+            const text = insight.replace(/^(⚠️|💡|📈)\s*/, '');
+            return (
+              <li key={idx} className="text-[#312e81] dark:text-indigo-100 text-[15px] font-semibold leading-relaxed bg-white/80 dark:bg-black/40 p-4 rounded-2xl shadow-sm border border-white/50 dark:border-indigo-500/20 flex items-start gap-3">
+                <span className="shrink-0 mt-0.5 opacity-90 text-lg">{emoji}</span>
+                <span>{text}</span>
+              </li>
+            );
+          })}
         </ul>
       </div>
 
       {/* BREAKDOWN OPTION */}
       <button 
         onClick={() => setShowBreakdown(!showBreakdown)}
-        className="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 py-4 rounded-2xl font-bold dark:text-white flex justify-center items-center gap-2 shadow-sm mb-4"
+        className="w-full bg-white dark:bg-gray-800 py-4 rounded-[2rem] font-bold text-slate-800 dark:text-white flex justify-center items-center gap-2 shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-md transition-all active:scale-95 mb-4"
       >
-        <FileText size={20} />
+        <FileText size={20} className="text-slate-500" />
         {showBreakdown ? 'הסתר פירוט עסקאות' : 'הצג פירוט עסקאות מלא'}
       </button>
 
