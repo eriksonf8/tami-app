@@ -30,22 +30,26 @@ const Finances: React.FC = () => {
   };
 
   return (
-    <div className="pb-24 pt-6">
-      {/* Header section - Centered */}
-      <div className="flex flex-col items-center mb-8">
-        <h2 className="text-3xl font-extrabold text-[#276749] dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 px-8 py-2 rounded-2xl mb-6 tracking-tight shadow-sm border border-emerald-100 dark:border-emerald-800/50">
-          כספים
-        </h2>
+    <div className="pb-24 pt-4 px-2">
+      {/* Premium Header Layout */}
+      <div className="flex justify-between items-end mb-8">
+        <div>
+          <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight flex items-baseline gap-1">
+            כספים
+            <span className="w-2 h-2 rounded-full bg-emerald-500 block"></span>
+          </h2>
+          <p className="text-sm text-slate-500 mt-1">ניהול מעקב הוצאות והכנסות</p>
+        </div>
         
         <div 
-          className="relative cursor-pointer flex items-center gap-2 text-slate-600 dark:text-slate-300 bg-white dark:bg-gray-800 px-5 py-2.5 rounded-full shadow-sm border border-gray-100 dark:border-gray-700 hover:border-emerald-200 transition-colors"
+          className="relative cursor-pointer flex items-center gap-2 text-slate-700 dark:text-slate-200 bg-white dark:bg-gray-800 px-4 py-2.5 rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.03)] border border-gray-100 dark:border-gray-700 hover:shadow-md hover:border-emerald-200 transition-all active:scale-95"
           onClick={() => {
             try { monthInputRef.current?.showPicker(); } catch (e) {}
           }}
         >
-          <CalendarDays size={16} className="text-[#276749]" />
-          <span className="text-lg font-bold">{getMonthName(expenseMonth)}</span>
-          <ChevronDown size={16} className="text-gray-400" />
+          <CalendarDays size={18} className="text-emerald-600 dark:text-emerald-400" />
+          <span className="text-sm font-bold pt-0.5">{getMonthName(expenseMonth)}</span>
+          <ChevronDown size={16} className="text-slate-400 ml-1" />
           <input 
             ref={monthInputRef}
             type="month" 
