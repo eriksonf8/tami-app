@@ -11,13 +11,13 @@ const MainLayout: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col relative pb-20 bg-slate-50 dark:bg-gray-950">
-      <header className="bg-slate-50 dark:bg-gray-950 text-[#0f172a] dark:text-white p-4 sticky top-0 z-30 flex justify-between items-center">
+      <header className="bg-slate-50 dark:bg-gray-950 text-[#0f172a] dark:text-white p-4 sticky top-0 z-30 flex justify-between items-center border-b border-gray-100 dark:border-gray-800">
         <button className="p-1">
-          <UserCircle size={24} className="text-gray-600 dark:text-gray-400" />
+          <Menu size={24} className="text-gray-600 dark:text-gray-400" />
         </button>
         <h1 className="text-xl font-extrabold text-center tracking-tight">זה Tami</h1>
         <button className="p-1">
-          <Menu size={24} className="text-gray-600 dark:text-gray-400" />
+          <UserCircle size={24} className="text-gray-600 dark:text-gray-400" />
         </button>
       </header>
 

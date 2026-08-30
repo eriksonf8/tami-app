@@ -30,7 +30,7 @@ const Finances: React.FC = () => {
 
   return (
     <div className="pb-24 pt-4">
-      <div className="flex flex-col items-end mb-8">
+      <div className="flex flex-col items-start mb-8">
         <h2 className="text-5xl font-extrabold text-[#0f172a] dark:text-white mb-4 tracking-tight">כספים</h2>
         
         <div className="relative cursor-pointer flex items-center gap-1.5 text-gray-500 hover:text-gray-800 transition-colors">
@@ -46,23 +46,23 @@ const Finances: React.FC = () => {
       </div>
       
       {/* Tabs */}
-      <div className="flex justify-between border-b border-gray-100 dark:border-gray-800 mb-8 relative">
+      <div className="flex justify-between border-b border-gray-100 dark:border-gray-800 mb-8 relative px-2">
         <button 
-          className={`pb-3 px-4 font-bold text-sm transition-colors relative ${activeTab === 'expenses' ? 'text-[#0f172a] dark:text-white' : 'text-gray-400 dark:text-gray-500 hover:text-gray-600'}`}
-          onClick={() => setActiveTab('expenses')}
-        >
-          הוצאות החודש
-          {activeTab === 'expenses' && (
-            <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#0f172a] dark:bg-white rounded-t-full"></div>
-          )}
-        </button>
-        <button 
-          className={`pb-3 px-4 font-bold text-sm transition-colors relative ${activeTab === 'debts' ? 'text-[#0f172a] dark:text-white' : 'text-gray-400 dark:text-gray-500 hover:text-gray-600'}`}
+          className={`pb-3 px-2 font-bold text-sm transition-colors relative ${activeTab === 'debts' ? 'text-[#0f172a] dark:text-white' : 'text-gray-400 dark:text-gray-500 hover:text-gray-600'}`}
           onClick={() => setActiveTab('debts')}
         >
           חובות פתוחים ({debts.length})
           {activeTab === 'debts' && (
-            <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#0f172a] dark:bg-white rounded-t-full"></div>
+            <div className="absolute bottom-[-1px] left-0 right-0 h-[2px] bg-[#0f172a] dark:bg-white rounded-t-full"></div>
+          )}
+        </button>
+        <button 
+          className={`pb-3 px-2 font-bold text-sm transition-colors relative ${activeTab === 'expenses' ? 'text-[#0f172a] dark:text-white' : 'text-gray-400 dark:text-gray-500 hover:text-gray-600'}`}
+          onClick={() => setActiveTab('expenses')}
+        >
+          הוצאות החודש
+          {activeTab === 'expenses' && (
+            <div className="absolute bottom-[-1px] left-0 right-0 h-[2px] bg-[#0f172a] dark:bg-white rounded-t-full"></div>
           )}
         </button>
       </div>
