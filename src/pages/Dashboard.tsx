@@ -129,6 +129,7 @@ const Dashboard: React.FC = () => {
             const metrics = getMetrics(range.start, range.end);
             const profit = metrics.profit;
             const isNegative = profit < 0;
+            const isZero = profit === 0;
             const displayValue = Math.abs(profit);
             
             return (
@@ -138,7 +139,7 @@ const Dashboard: React.FC = () => {
                 className="bg-white dark:bg-gray-800 rounded-3xl p-5 shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] border-none flex items-center justify-between cursor-pointer active:scale-95 transition-all"
               >
                 <div className="flex items-center gap-4">
-                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 ${isNegative ? 'bg-red-50 text-red-500 dark:bg-red-900/20 dark:text-red-400' : 'bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400'}`}>
+                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 ${isZero ? 'bg-slate-100 text-slate-500 dark:bg-gray-700 dark:text-gray-400' : isNegative ? 'bg-red-50 text-red-500 dark:bg-red-900/20 dark:text-red-400' : 'bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400'}`}>
                     {card.icon}
                   </div>
                   <div>
@@ -148,7 +149,7 @@ const Dashboard: React.FC = () => {
                 </div>
                 
                 <div className="text-left pl-2">
-                  <p className={`text-2xl font-black tracking-tight ${isNegative ? 'text-red-600 dark:text-red-500' : 'text-[#276749] dark:text-emerald-400'}`}>
+                  <p className={`text-2xl font-black tracking-tight ${isZero ? 'text-slate-600 dark:text-gray-400' : isNegative ? 'text-red-600 dark:text-red-500' : 'text-[#276749] dark:text-emerald-400'}`}>
                     ₪{displayValue.toLocaleString()}
                     {isNegative ? '-' : ''}
                   </p>
