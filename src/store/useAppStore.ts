@@ -40,21 +40,42 @@ export interface Expense {
 export interface UserProfile {
   name: string;
   businessName: string;
+  businessId?: string; // תעודת זהות / ח.פ
   phone: string;
+  email?: string;
   taxCeiling: number;
   profession?: string;
   customJobTypes?: string[];
   photoUrl?: string;
+  accountantEmail?: string;
+  businessHours?: { start: string; end: string; closedDays: number[] };
+  enableMonthlyGoal?: boolean;
+  enableConfetti?: boolean;
+  quickMessages?: {
+    imOutside?: string;
+    onMyWay?: string;
+    delayed?: string;
+  };
 }
 
 export interface Settings {
   darkMode: boolean;
   smsReminders: boolean;
+  pushNewCustomer: boolean;
+  pushDebt: boolean;
+  pushConflict: boolean;
+  textSize: 'normal' | 'large' | 'xlarge';
+  reduceMotion: boolean;
 }
 
 const DEFAULT_SETTINGS: Settings = {
   darkMode: false,
-  smsReminders: true
+  smsReminders: true,
+  pushNewCustomer: true,
+  pushDebt: true,
+  pushConflict: true,
+  textSize: 'normal',
+  reduceMotion: false
 };
 
 export interface Toast {

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import BottomNav from '../components/BottomNav';
-import { UserCircle, Menu } from 'lucide-react';
+import { UserCircle } from 'lucide-react';
 
 import SpeedDial from '../components/SpeedDial';
 import ExpenseModal from '../components/ExpenseModal';
@@ -12,11 +12,9 @@ const MainLayout: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col relative pb-20 bg-slate-50 dark:bg-gray-950">
       <header className="bg-slate-50 dark:bg-gray-950 text-[#0f172a] dark:text-white p-4 sticky top-0 z-30 flex justify-between items-center border-b border-gray-100 dark:border-gray-800">
-        <button className="p-1">
-          <Menu size={24} className="text-gray-600 dark:text-gray-400" />
-        </button>
+        <div className="w-8"></div>
         <h1 className="text-xl font-extrabold text-center tracking-tight">זה Tami</h1>
-        <button className="p-1">
+        <button className="p-1 cursor-pointer hover:bg-slate-200 dark:hover:bg-gray-800 rounded-full transition-colors" onClick={() => window.location.href = '/profile'}>
           <UserCircle size={24} className="text-gray-600 dark:text-gray-400" />
         </button>
       </header>

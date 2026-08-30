@@ -10,6 +10,7 @@ const Finances = React.lazy(() => import('./pages/Finances'));
 const Dashboard = React.lazy(() => import('./pages/Dashboard'));
 const Settings = React.lazy(() => import('./pages/Settings'));
 const CustomerForm = React.lazy(() => import('./pages/CustomerForm'));
+const ProfileSettings = React.lazy(() => import('./pages/ProfileSettings'));
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const profile = useAppStore(state => state.profile);
@@ -47,6 +48,7 @@ const App: React.FC = () => {
             <Route path="/finances" element={<Finances />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/settings" element={<Settings />} />
+            <Route path="/profile" element={<ProfileSettings />} />
           </Route>
           
           <Route path="*" element={<Navigate to="/" replace />} />
