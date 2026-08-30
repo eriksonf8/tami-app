@@ -33,13 +33,17 @@ const BottomNav: React.FC = () => {
                   }`
                 }
               >
-                <div className="relative">
-                  <item.icon size={22} strokeWidth={isActive ? 2.5 : 2} />
-                  {item.badge && (
-                    <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full border border-white dark:border-gray-900"></span>
-                  )}
-                </div>
-                <span className="text-[10px] mt-1 font-semibold">{item.label}</span>
+                {({ isActive }) => (
+                  <>
+                    <div className="relative">
+                      <item.icon size={22} strokeWidth={isActive ? 2.5 : 2} />
+                      {item.badge && (
+                        <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full border border-white dark:border-gray-900"></span>
+                      )}
+                    </div>
+                    <span className="text-[10px] mt-1 font-semibold">{item.label}</span>
+                  </>
+                )}
               </NavLink>
             </React.Fragment>
           );
