@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import BottomNav from '../components/BottomNav';
+import { UserCircle, Menu } from 'lucide-react';
 
 import SpeedDial from '../components/SpeedDial';
 import ExpenseModal from '../components/ExpenseModal';
@@ -9,9 +10,15 @@ const MainLayout: React.FC = () => {
   const [showCrmModal, setShowCrmModal] = useState(false);
 
   return (
-    <div className="min-h-screen flex flex-col relative pb-20">
-      <header className="bg-slate text-white p-4 shadow-md sticky top-0 z-30">
-        <h1 className="text-xl font-bold text-center">Tami (תמי)</h1>
+    <div className="min-h-screen flex flex-col relative pb-20 bg-slate-50 dark:bg-gray-950">
+      <header className="bg-slate-50 dark:bg-gray-950 text-[#0f172a] dark:text-white p-4 sticky top-0 z-30 flex justify-between items-center">
+        <button className="p-1">
+          <UserCircle size={24} className="text-gray-600 dark:text-gray-400" />
+        </button>
+        <h1 className="text-xl font-extrabold text-center tracking-tight">זה Tami</h1>
+        <button className="p-1">
+          <Menu size={24} className="text-gray-600 dark:text-gray-400" />
+        </button>
       </header>
 
       <main className="flex-1 p-4 max-w-md mx-auto w-full">
