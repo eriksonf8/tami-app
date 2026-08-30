@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAppStore } from '../store/useAppStore';
-import { ChevronRight, ChevronLeft, ArrowRight, Calendar as CalendarIcon, TrendingUp, FileText } from 'lucide-react';
+import { ChevronRight, ChevronLeft, ArrowRight, Calendar as CalendarIcon, TrendingUp, FileText, Trophy, PieChart } from 'lucide-react';
 
 type Period = 'daily' | 'weekly' | 'monthly' | 'quarterly' | 'yearly';
 
@@ -109,35 +109,48 @@ const Dashboard: React.FC = () => {
   // --------------------------------------------------------
   if (viewMode === 'main') {
     const cards = [
-      { id: 'daily', title: 'הכנסות היום', icon: '📅' },
-      { id: 'weekly', title: 'הכנסות השבוע', icon: '🗓️' },
-      { id: 'monthly', title: 'הכנסות החודש', icon: '📊' },
-      { id: 'quarterly', title: 'הכנסות הרבעון', icon: '📈' },
-      { id: 'yearly', title: 'הכנסות השנה', icon: '🏆' },
+      { id: 'daily', type: 'income', title: 'הכנסות היום', icon: <CalendarIcon size={22} /> },
+      { id: 'weekly', type: 'income', title: 'הכנסות השבוע', icon: <CalendarIcon size={22} /> },
+      { id: 'monthly', type: 'expense', title: 'הוצאות החודש', icon: <CalendarIcon size={22} /> },
+      { id: 'quarterly', type: 'income', title: 'הכנסות הרבעון', icon: <PieChart size={22} /> },
+      { id: 'yearly', type: 'income', title: 'הכנסות השנה', icon: <Trophy size={22} /> },
     ] as const;
 
     return (
-      <div className="pb-24">
-        <h2 className="text-2xl font-bold mb-6 dark:text-white">לוח בקרה פיננסי</h2>
-        <div className="flex flex-col gap-4">
+      <div className="pb-24 pt-4 px-2">
+        <div className="text-center mb-8">
+          <h2 className="text-3xl font-extrabold text-[#0f172a] dark:text-white tracking-tight mb-1">לוח בקרה פיננסי</h2>
+          <p className="text-slate-500 text-sm">סקירה כלכלית מקיפה</p>
+        </div>
+        
+        <div className="flex flex-col gap-5">
           {cards.map(card => {
             const range = getDateRange(new Date(), card.id);
-            const { income } = getMetrics(range.start, range.end);
+            const metrics = getMetrics(range.start, range.end);
+            const value = card.type === 'income' ? metrics.income : metrics.cost;
+            const isNegative = card.type === 'expense';
+            
             return (
               <div 
                 key={card.id}
                 onClick={() => { setReferenceDate(new Date()); setViewMode(card.id); setShowBreakdown(false); }}
-                className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 flex items-center justify-between cursor-pointer active:scale-95 transition-transform"
+                className="bg-white dark:bg-gray-800 rounded-3xl p-5 shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] border-none flex items-center justify-between cursor-pointer active:scale-95 transition-all"
               >
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-lg">{card.icon}</span>
-                    <h3 className="font-bold text-gray-700 dark:text-gray-200">{card.title}</h3>
+                <div className="flex items-center gap-4">
+                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 ${isNegative ? 'bg-red-50 text-red-500 dark:bg-red-900/20 dark:text-red-400' : 'bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400'}`}>
+                    {card.icon}
                   </div>
-                  <p className="text-sm text-gray-500">{formatDateRangeStr(range.start, range.end, card.id)}</p>
+                  <div>
+                    <h3 className="font-bold text-slate-800 dark:text-gray-100 text-[15px]">{card.title}</h3>
+                    <p className="text-xs text-slate-400 mt-0.5">{formatDateRangeStr(range.start, range.end, card.id)}</p>
+                  </div>
                 </div>
-                <div className="text-left">
-                  <p className="text-3xl font-bold text-sage">₪{income}</p>
+                
+                <div className="text-left pl-2">
+                  <p className={`text-2xl font-black tracking-tight ${isNegative ? 'text-red-600 dark:text-red-500' : 'text-[#276749] dark:text-emerald-400'}`}>
+                    ₪{value.toLocaleString()}
+                    {isNegative && value > 0 ? '-' : ''}
+                  </p>
                 </div>
               </div>
             );
