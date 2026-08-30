@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { useAppStore } from '../store/useAppStore';
-import { User, ArrowRight, Camera, Plus, X, Building, Mail, Target, Phone, Info } from 'lucide-react';
+import { User, ArrowRight, Camera, Plus, X, Building, Mail, Target, Phone, Info, Download } from 'lucide-react';
 import { PROFESSION_NAMES } from '../constants/professions';
 import { useNavigate } from 'react-router-dom';
 
@@ -120,7 +120,39 @@ const ProfileSettings: React.FC = () => {
       {/* Tax & Accountant */}
       <div className="bg-white dark:bg-gray-800 rounded-3xl p-6 mb-6 shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-slate-100 dark:border-gray-800">
         <div className="space-y-4">
-          <InputField icon={Mail} type="email" placeholder="מייל רואה חשבון (לשליחת דוחות)" value={profile?.accountantEmail || ''} onChange={(e: any) => updateProfile({ accountantEmail: e.target.value })} />
+          <div className="flex gap-2">
+            <div className="flex-1">
+              <InputField icon={Mail} type="email" placeholder="מייל רואה חשבון (לשליחת דוחות)" value={profile?.accountantEmail || ''} onChange={(e: any) => updateProfile({ accountantEmail: e.target.value })} />
+            </div>
+            <button 
+              onClick={() => {
+                const jobs = useAppStore.getState().jobs;
+                const expenses = useAppStore.getState().expenses;
+                // Only count completed jobs
+                const completedJobs = jobs.filter(j => j.status === 'completed');
+                
+                const report = {
+                  summary: {
+                    totalJobs: completedJobs.length,
+                    totalIncome: completedJobs.reduce((sum, j) => sum + (j.price || 0), 0),
+                    totalExpenses: expenses.reduce((sum, e) => sum + e.amount, 0)
+                  }
+                };
+                
+                const text = `דו"ח חודשי - ${profile?.businessName || profile?.name}\nהכנסות מבוצעות: ₪${report.summary.totalIncome}\nהוצאות: ₪${report.summary.totalExpenses}\nסה"כ עבודות שהסתיימו: ${report.summary.totalJobs}`;
+                
+                if (profile?.accountantEmail) {
+                  window.open(`mailto:${profile.accountantEmail}?subject=דו"ח חודשי - ${profile?.businessName || profile?.name}&body=${encodeURIComponent(text)}`, '_blank');
+                } else {
+                  window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+                }
+              }}
+              className="w-14 bg-[#779982] text-white rounded-xl flex items-center justify-center shrink-0 active:scale-95 transition-transform shadow-sm hover:bg-[#658570]"
+              title="ייצוא דוח"
+            >
+              <Download size={22} />
+            </button>
+          </div>
           
           <div className="pt-2">
             <label className="block text-right text-sm font-bold text-slate-500 mb-2 px-1">תקרת עוסק פטור שנתית</label>

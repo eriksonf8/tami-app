@@ -1,6 +1,6 @@
 import React from 'react';
 import { useAppStore } from '../store/useAppStore';
-import { Moon, LogOut, ChevronLeft, Trash2, Bell, Type, MonitorPlay, Shield, FileText } from 'lucide-react';
+import { Moon, LogOut, ChevronLeft, Trash2, Bell, Type, MonitorPlay, Shield, FileText, Wrench } from 'lucide-react';
 
 const SettingsRow = ({ icon: Icon, title, subtitle, control, isDestructive, onClick }: any) => {
   const content = (
@@ -101,6 +101,66 @@ const Settings: React.FC = () => {
           title="הפחתת תנועה" 
           subtitle="ביטול אנימציות והחלקות"
           control={<ToggleControl checked={settings.reduceMotion} onChange={() => toggleSetting('reduceMotion')} />}
+        />
+      </div>
+
+      {/* Developer Tools Card */}
+      <div className="bg-white dark:bg-gray-800 rounded-3xl px-5 mb-5 shadow-[0_4px_20px_rgba(0,0,0,0.03)] border-none divide-y divide-slate-100 dark:divide-gray-700">
+        <SettingsRow 
+          icon={Wrench} 
+          title="ייצר נתוני בדיקה (חודש שלם)" 
+          subtitle="עבודות בסטטוסים: בוצע, לפני אישור, בביצוע"
+          control={<ChevronLeft size={20} className="text-slate-400" />}
+          onClick={() => {
+            if (!window.confirm('זה יוסיף המון עבודות לבדיקה. להמשיך?')) return;
+            
+            const mockJobs: any[] = [];
+            const jobTypes = ['תיקון מזגן', 'התקנת ברז', 'החלפת שקע', 'פתיחת סתימה', 'צביעת חדר', 'הרכבת ארון'];
+            const names = ['דוד כהן', 'שרה לוי', 'ישראל ישראלי', 'רחל אברהם', 'יוסף מזרחי'];
+            const cities = ['תל אביב', 'ירושלים', 'חיפה', 'ראשון לציון'];
+            const allTimeWindows = ['08:00-10:00', '10:00-12:00', '12:00-14:00', '14:00-16:00', '16:00-18:00'];
+            
+            const bookedTimes: Record<string, string[]> = {};
+            
+            for (let i = 0; i < 30; i++) {
+              const date = new Date();
+              const offset = Math.floor(Math.random() * 30) - 15;
+              date.setDate(date.getDate() + offset);
+              const dateStr = date.toISOString().split('T')[0];
+              
+              if (!bookedTimes[dateStr]) bookedTimes[dateStr] = [];
+              const availableTimes = allTimeWindows.filter(t => !bookedTimes[dateStr].includes(t));
+              if (availableTimes.length === 0) continue;
+              
+              const selectedTime = availableTimes[Math.floor(Math.random() * availableTimes.length)];
+              bookedTimes[dateStr].push(selectedTime);
+              
+              // Generate diverse statuses
+              const randStatus = Math.random();
+              let status = 'pending';
+              if (randStatus > 0.6) status = 'completed'; // 40% completed
+              else if (randStatus > 0.3) status = 'approved'; // 30% approved
+              
+              const isUnpaid = status === 'completed' && Math.random() > 0.8;
+              
+              mockJobs.push({
+                id: `mock-${Date.now()}-${i}`,
+                customerName: names[Math.floor(Math.random() * names.length)],
+                phone: `05${Math.floor(Math.random() * 100000000)}`,
+                address: `${cities[Math.floor(Math.random() * cities.length)]}, הרצל ${Math.floor(Math.random() * 100)}`,
+                hasElevator: Math.random() > 0.5,
+                timeWindow: selectedTime,
+                jobType: jobTypes[Math.floor(Math.random() * jobTypes.length)],
+                status,
+                date: dateStr,
+                price: status === 'completed' ? Math.floor(Math.random() * 500) + 200 : undefined,
+                paymentMethod: status === 'completed' ? (isUnpaid ? 'unpaid' : 'bit') : undefined
+              });
+            }
+            
+            useAppStore.setState(state => ({ jobs: [...state.jobs, ...mockJobs] }));
+            alert(`נוספו ${mockJobs.length} עבודות בדיקה בהצלחה!`);
+          }}
         />
       </div>
 
