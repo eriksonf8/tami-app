@@ -33,7 +33,7 @@ const Finances: React.FC = () => {
     <div className="pb-24 pt-6">
       {/* Header section - Centered */}
       <div className="flex flex-col items-center mb-8">
-        <h2 className="text-4xl font-extrabold text-[#276749] dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 px-10 py-3 rounded-3xl mb-5 tracking-tight shadow-sm border border-emerald-100 dark:border-emerald-800/50">
+        <h2 className="text-3xl font-extrabold text-[#276749] dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 px-8 py-2 rounded-2xl mb-6 tracking-tight shadow-sm border border-emerald-100 dark:border-emerald-800/50">
           כספים
         </h2>
         

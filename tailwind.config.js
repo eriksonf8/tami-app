@@ -7,6 +7,9 @@ export default {
   darkMode: 'class',
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['Assistant', 'sans-serif'],
+      },
       colors: {
         sage: {
           DEFAULT: '#779982',
