@@ -88,16 +88,19 @@ const ExpenseModal: React.FC = () => {
     <div className="fixed inset-0 bg-[#F8F9FA] dark:bg-gray-900 z-[100] flex flex-col pb-safe overflow-hidden">
       
       {/* Header */}
-      <div className="flex justify-between items-center p-6">
+      <div className="relative flex justify-between items-center p-6">
         <button 
           onClick={closeExpenseModal} 
-          className="w-10 h-10 bg-slate-100 dark:bg-gray-800 rounded-2xl flex items-center justify-center text-slate-600 dark:text-gray-400 hover:bg-slate-200 dark:hover:bg-gray-700 transition-colors"
+          className="relative z-10 w-10 h-10 bg-slate-100 dark:bg-gray-800 rounded-2xl flex items-center justify-center text-slate-600 dark:text-gray-400 hover:bg-slate-200 dark:hover:bg-gray-700 transition-colors"
         >
           <X size={20} />
         </button>
-        <h2 className="text-xl font-extrabold text-[#0f172a] dark:text-white">
-          {expense ? 'עריכת הוצאה' : 'הוצאה חדשה'}
-        </h2>
+        
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <h2 className="text-xl font-extrabold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/30 px-6 py-1.5 rounded-2xl shadow-sm border border-red-100 dark:border-red-800/50">
+            {expense ? 'עריכת הוצאה' : 'הוצאה חדשה'}
+          </h2>
+        </div>
       </div>
 
       <div className="flex-1 overflow-y-auto px-6 pb-24">
