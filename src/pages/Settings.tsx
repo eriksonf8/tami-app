@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useAppStore } from '../store/useAppStore';
-import { Moon, LogOut, ChevronLeft, Trash2, Bell, Type, MonitorPlay, Shield, FileText, Wrench } from 'lucide-react';
+import { Moon, LogOut, ChevronLeft, Trash2, Bell, Type, MonitorPlay, Shield, FileText, Wrench, X } from 'lucide-react';
 
 const SettingsRow = ({ icon: Icon, title, subtitle, control, isDestructive, onClick }: any) => {
   const content = (
@@ -32,6 +32,9 @@ const Settings: React.FC = () => {
   const settings = useAppStore(state => state.settings);
   const updateSettings = useAppStore(state => state.updateSettings);
   const setProfile = useAppStore(state => state.setProfile);
+  
+  const [showAccessibility, setShowAccessibility] = useState(false);
+  const [showPrivacy, setShowPrivacy] = useState(false);
 
   const handleLogout = () => {
     if (window.confirm('האם אתה בטוח שברצונך להתנתק?')) {
@@ -170,13 +173,13 @@ const Settings: React.FC = () => {
           icon={Shield} 
           title="הצהרת נגישות" 
           control={<ChevronLeft size={20} className="text-slate-400" />}
-          onClick={() => alert('מסמך הצהרת נגישות יוצג כאן')}
+          onClick={() => setShowAccessibility(true)}
         />
         <SettingsRow 
           icon={FileText} 
           title="תנאי שימוש ופרטיות" 
           control={<ChevronLeft size={20} className="text-slate-400" />}
-          onClick={() => alert('מסמך תנאי שימוש ופרטיות יוצג כאן')}
+          onClick={() => setShowPrivacy(true)}
         />
         <SettingsRow 
           icon={Trash2} 
@@ -199,6 +202,77 @@ const Settings: React.FC = () => {
         <span className="text-lg">התנתק מהמערכת</span>
         <LogOut size={22} className="text-red-100" />
       </button>
+
+      {/* Accessibility Modal */}
+      {showAccessibility && (
+        <div className="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4" onClick={() => setShowAccessibility(false)}>
+          <div className="bg-white dark:bg-gray-800 rounded-3xl p-6 w-full max-w-lg shadow-2xl max-h-[85vh] flex flex-col" onClick={e => e.stopPropagation()}>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-2xl font-bold dark:text-white">הצהרת נגישות</h2>
+              <button onClick={() => setShowAccessibility(false)} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 bg-gray-100 dark:bg-gray-700 rounded-full p-2">
+                <X size={20} />
+              </button>
+            </div>
+            <div className="overflow-y-auto pr-1 text-sm text-gray-700 dark:text-gray-300 space-y-4">
+              <p>
+                אפליקציה זו פותחה מתוך מודעות והתחשבות בצרכי נגישות, במטרה לאפשר חווית שימוש מיטבית לכלל המשתמשים, לרבות אנשים עם מוגבלויות, בהתאם לחוק שוויון זכויות לאנשים עם מוגבלות.
+              </p>
+              <h3 className="font-bold text-lg dark:text-white mt-4">התאמות הנגישות שבוצעו:</h3>
+              <ul className="list-disc list-inside space-y-2">
+                <li>תמיכה בניגודיות חזותית גבוהה (קונטרסט) המותאמת לתנאי שטח ושמש.</li>
+                <li>שימוש בגופנים קריאים וברורים, ללא הבהובים.</li>
+                <li>התאמה למסכי מגע שונים וגדלי מסך מגוונים (רספונסיביות מלאה).</li>
+                <li>מבנה סמנטי קריא לטכנולוגיות מסייעות (כגון קוראי מסך).</li>
+                <li>אפשרות לביטול אנימציות והפחתת תנועה דרך הגדרות האפליקציה.</li>
+              </ul>
+              <h3 className="font-bold text-lg dark:text-white mt-4">סייגים לנגישות:</h3>
+              <p>
+                למרות מאמצינו להנגיש את כלל חלקי האפליקציה, ייתכן ויתגלו רכיבים מסוימים שאינם מונגשים במלואם. אנו ממשיכים במאמצים לשפר את הנגישות כחלק ממחויבותנו לאפשר שימוש נוח ובטוח לכלל האוכלוסייה.
+              </p>
+              <p className="mt-4 font-bold">
+                אם נתקלתם בבעיית נגישות או שיש לכם הצעות לשיפור, נשמח לקבל פנייה ולתקן זאת בהקדם.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Privacy Policy Modal */}
+      {showPrivacy && (
+        <div className="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4" onClick={() => setShowPrivacy(false)}>
+          <div className="bg-white dark:bg-gray-800 rounded-3xl p-6 w-full max-w-lg shadow-2xl max-h-[85vh] flex flex-col" onClick={e => e.stopPropagation()}>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-2xl font-bold dark:text-white">תנאי שימוש ומדיניות פרטיות</h2>
+              <button onClick={() => setShowPrivacy(false)} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 bg-gray-100 dark:bg-gray-700 rounded-full p-2">
+                <X size={20} />
+              </button>
+            </div>
+            <div className="overflow-y-auto pr-1 text-sm text-gray-700 dark:text-gray-300 space-y-4">
+              <h3 className="font-bold text-lg dark:text-white mt-2">1. כללי</h3>
+              <p>השימוש באפליקציה מהווה הסכמה לתנאים המפורטים להלן. האפליקציה נועדה לסייע לבעלי עסקים ועצמאיים בניהול עבודות ולקוחות.</p>
+              
+              <h3 className="font-bold text-lg dark:text-white mt-4">2. שמירת נתונים ופרטיות</h3>
+              <p>
+                <strong>בהתאם לחוק הגנת הפרטיות, התשמ"א-1981:</strong> הנתונים המוכנסים לאפליקציה (לרבות פרטי לקוחות, טלפונים, זמני עבודה, והכנסות) <strong>נשמרים באופן מקומי בלבד</strong> על מכשיר הקצה של המשתמש (בדפדפן או במכשיר הנייד).
+              </p>
+              <p>
+                מפתחי האפליקציה <strong>אינם</strong> אוספים, אינם קוראים, אינם שומרים בשרת חיצוני, ואינם מעבירים את המידע העסקי או האישי שלך לצד ג' כלשהו. המידע הוא בבעלותך ובאחריותך הבלעדית.
+              </p>
+
+              <h3 className="font-bold text-lg dark:text-white mt-4">3. אחריות המשתמש וגיבוי נתונים</h3>
+              <p>
+                מכיוון שהנתונים נשמרים מקומית על המכשיר שלך, <strong>באחריותך הבלעדית לגבות את נתוניך</strong> (למשל על ידי ייצוא דוחות או גיבוי המכשיר).
+                מפתחי האפליקציה לא יישאו באחריות לאובדן מידע, נזק ישיר או עקיף שייגרם כתוצאה משימוש באפליקציה, מחיקת נתונים, או אובדן המכשיר.
+              </p>
+
+              <h3 className="font-bold text-lg dark:text-white mt-4">4. עדכונים ושינויים</h3>
+              <p>
+                אנו שומרים את הזכות לעדכן את תנאי השימוש ומדיניות הפרטיות מעת לעת. המשך השימוש באפליקציה מהווה את הסכמתך לתנאים המעודכנים.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
