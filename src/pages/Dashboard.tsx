@@ -109,11 +109,11 @@ const Dashboard: React.FC = () => {
   // --------------------------------------------------------
   if (viewMode === 'main') {
     const cards = [
-      { id: 'daily', type: 'income', title: 'הכנסות היום', icon: <CalendarIcon size={22} /> },
-      { id: 'weekly', type: 'income', title: 'הכנסות השבוע', icon: <CalendarIcon size={22} /> },
-      { id: 'monthly', type: 'expense', title: 'הוצאות החודש', icon: <CalendarIcon size={22} /> },
-      { id: 'quarterly', type: 'income', title: 'הכנסות הרבעון', icon: <PieChart size={22} /> },
-      { id: 'yearly', type: 'income', title: 'הכנסות השנה', icon: <Trophy size={22} /> },
+      { id: 'daily', title: 'דוח יומי', icon: <CalendarIcon size={22} /> },
+      { id: 'weekly', title: 'דוח שבועי', icon: <CalendarIcon size={22} /> },
+      { id: 'monthly', title: 'דוח חודשי', icon: <CalendarIcon size={22} /> },
+      { id: 'quarterly', title: 'דוח רבעוני', icon: <PieChart size={22} /> },
+      { id: 'yearly', title: 'דוח שנתי', icon: <Trophy size={22} /> },
     ] as const;
 
     return (
@@ -127,8 +127,9 @@ const Dashboard: React.FC = () => {
           {cards.map(card => {
             const range = getDateRange(new Date(), card.id);
             const metrics = getMetrics(range.start, range.end);
-            const value = card.type === 'income' ? metrics.income : metrics.cost;
-            const isNegative = card.type === 'expense';
+            const profit = metrics.profit;
+            const isNegative = profit < 0;
+            const displayValue = Math.abs(profit);
             
             return (
               <div 
@@ -148,8 +149,8 @@ const Dashboard: React.FC = () => {
                 
                 <div className="text-left pl-2">
                   <p className={`text-2xl font-black tracking-tight ${isNegative ? 'text-red-600 dark:text-red-500' : 'text-[#276749] dark:text-emerald-400'}`}>
-                    ₪{value.toLocaleString()}
-                    {isNegative && value > 0 ? '-' : ''}
+                    ₪{displayValue.toLocaleString()}
+                    {isNegative ? '-' : ''}
                   </p>
                 </div>
               </div>
