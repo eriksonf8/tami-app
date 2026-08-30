@@ -25,6 +25,14 @@ const BottomNav: React.FC = () => {
               {isSpacer && <div className="w-16 flex-shrink-0" /> /* Spacer for FAB */}
               <NavLink
                 to={item.to}
+                onClick={() => {
+                  const isActive = window.location.pathname === item.to;
+                  if (isActive) {
+                    if (item.to === '/dashboard') window.dispatchEvent(new Event('reset-dashboard'));
+                    if (item.to === '/finances') window.dispatchEvent(new Event('reset-finances'));
+                    if (item.to === '/') window.dispatchEvent(new Event('reset-agenda'));
+                  }
+                }}
                 className="flex flex-col items-center justify-center w-16 h-full group"
               >
                 {({ isActive }) => (

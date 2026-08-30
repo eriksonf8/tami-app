@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAppStore } from '../store/useAppStore';
-import { ChevronRight, ChevronLeft, ArrowRight, Calendar as CalendarIcon, TrendingUp, FileText, Trophy, PieChart, Users, Sparkles } from 'lucide-react';
+import { ChevronRight, ChevronLeft, ArrowRight, Calendar as CalendarIcon, FileText, Trophy, PieChart, Users, Sparkles } from 'lucide-react';
 
 type Period = 'daily' | 'weekly' | 'monthly' | 'quarterly' | 'yearly';
 
@@ -11,6 +11,16 @@ const Dashboard: React.FC = () => {
   const [viewMode, setViewMode] = useState<'main' | Period>('main');
   const [referenceDate, setReferenceDate] = useState(new Date());
   const [showBreakdown, setShowBreakdown] = useState(false);
+
+  React.useEffect(() => {
+    const handleReset = () => {
+      setViewMode('main');
+      setShowBreakdown(false);
+      setReferenceDate(new Date());
+    };
+    window.addEventListener('reset-dashboard', handleReset);
+    return () => window.removeEventListener('reset-dashboard', handleReset);
+  }, []);
 
   // Helper to format date strings YYYY-MM-DD safely
   const toISODate = (d: Date) => {
@@ -172,13 +182,13 @@ const Dashboard: React.FC = () => {
   return (
     <div className="pb-24 pt-4 px-2">
       {/* Header Back Button */}
-      <div className="flex justify-end mb-6">
+      <div className="flex justify-start mb-6">
         <button 
           onClick={() => setViewMode('main')} 
           className="flex items-center gap-2 text-slate-600 dark:text-slate-300 font-bold hover:text-slate-900 dark:hover:text-white transition-colors"
         >
-          חזור ללוח הראשי
           <ArrowRight size={18} />
+          חזור ללוח הראשי
         </button>
       </div>
 

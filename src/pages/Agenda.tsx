@@ -21,6 +21,14 @@ const Agenda: React.FC = () => {
   
   const [currentDate, setCurrentDate] = useState(new Date());
   const dateStr = currentDate.toISOString().split('T')[0];
+
+  useEffect(() => {
+    const handleReset = () => {
+      setCurrentDate(new Date());
+    };
+    window.addEventListener('reset-agenda', handleReset);
+    return () => window.removeEventListener('reset-agenda', handleReset);
+  }, []);
   
   // Pending tab jobs
   const pendingJobs = jobs.filter(j => j.status === 'pending');

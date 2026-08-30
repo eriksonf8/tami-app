@@ -4,6 +4,13 @@ import { Phone, MessageCircle, Check, Receipt, ChevronDown, CalendarDays } from 
 
 const Finances: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'debts' | 'expenses'>('expenses');
+  
+  React.useEffect(() => {
+    const handleReset = () => setActiveTab('expenses');
+    window.addEventListener('reset-finances', handleReset);
+    return () => window.removeEventListener('reset-finances', handleReset);
+  }, []);
+
   const jobs = useAppStore(state => state.jobs);
   const expenses = useAppStore(state => state.expenses);
   const updateJob = useAppStore(state => state.updateJob);
