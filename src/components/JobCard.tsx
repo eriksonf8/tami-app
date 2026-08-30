@@ -101,17 +101,17 @@ const JobCard: React.FC<JobCardProps> = ({ job, onComplete, onFollowUp, onEdit }
 
           {!expanded && !isCompleted && (
             <div className="flex gap-2 mt-4 pt-4 border-t border-gray-100 dark:border-gray-700 relative">
-              <button onClick={(e) => { e.stopPropagation(); openWaze(); }} className="flex-1 bg-[#e6e8fa] hover:bg-[#d8dbf7] dark:bg-indigo-900/30 dark:hover:bg-indigo-900/50 text-[#1d1b84] dark:text-indigo-400 rounded-xl py-3.5 flex flex-col items-center justify-center gap-1.5 font-bold transition-colors">
-                <Navigation size={22} />
-                <span className="text-sm">נווט</span>
-              </button>
               <a href={`tel:${job.phone}`} onClick={e => e.stopPropagation()} className="flex-1 bg-[#b8ead2] hover:bg-[#a6e2c3] dark:bg-emerald-900/30 dark:hover:bg-emerald-900/50 text-[#185536] dark:text-emerald-400 rounded-xl py-3.5 flex flex-col items-center justify-center gap-1.5 font-bold transition-colors">
                 <Phone size={22} />
                 <span className="text-sm">חייג</span>
               </a>
-              <button onClick={(e) => { e.stopPropagation(); setShowQuickReplies(!showQuickReplies); }} className="flex-1 bg-[#b8ead2] hover:bg-[#a6e2c3] dark:bg-emerald-900/30 dark:hover:bg-emerald-900/50 text-[#185536] dark:text-emerald-400 rounded-xl py-3.5 flex flex-col items-center justify-center gap-1.5 font-bold transition-colors">
+              <button onClick={(e) => { e.stopPropagation(); setShowQuickReplies(!showQuickReplies); }} className="flex-1 bg-[#dcf8c6] hover:bg-[#c8efaf] dark:bg-[#128C7E]/30 dark:hover:bg-[#128C7E]/50 text-[#075e54] dark:text-[#25D366] rounded-xl py-3.5 flex flex-col items-center justify-center gap-1.5 font-bold transition-colors">
                 <MessageCircle size={22} />
                 <span className="text-sm">וואצאפ</span>
+              </button>
+              <button onClick={(e) => { e.stopPropagation(); openWaze(); }} className="flex-1 bg-[#e6e8fa] hover:bg-[#d8dbf7] dark:bg-indigo-900/30 dark:hover:bg-indigo-900/50 text-[#1d1b84] dark:text-indigo-400 rounded-xl py-3.5 flex flex-col items-center justify-center gap-1.5 font-bold transition-colors">
+                <Navigation size={22} />
+                <span className="text-sm">נווט</span>
               </button>
 
               {showQuickReplies && (
@@ -173,17 +173,17 @@ const JobCard: React.FC<JobCardProps> = ({ job, onComplete, onFollowUp, onEdit }
 
               {/* Top Actions Row */}
               <div className="flex gap-2 mb-3 relative">
-                <button onClick={(e) => { e.stopPropagation(); openWaze(); }} className="flex-1 bg-[#e6e8fa] hover:bg-[#d8dbf7] dark:bg-indigo-900/30 dark:hover:bg-indigo-900/50 text-[#1d1b84] dark:text-indigo-400 rounded-xl py-3.5 flex flex-col items-center justify-center gap-1.5 font-bold transition-colors">
-                  <Navigation size={22} />
-                  <span className="text-sm">נווט</span>
-                </button>
                 <a href={`tel:${job.phone}`} onClick={e => e.stopPropagation()} className="flex-1 bg-[#b8ead2] hover:bg-[#a6e2c3] dark:bg-emerald-900/30 dark:hover:bg-emerald-900/50 text-[#185536] dark:text-emerald-400 rounded-xl py-3.5 flex flex-col items-center justify-center gap-1.5 font-bold transition-colors">
                   <Phone size={22} />
                   <span className="text-sm">חייג</span>
                 </a>
-                <button onClick={(e) => { e.stopPropagation(); setShowQuickReplies(!showQuickReplies); }} className="flex-1 bg-[#b8ead2] hover:bg-[#a6e2c3] dark:bg-emerald-900/30 dark:hover:bg-emerald-900/50 text-[#185536] dark:text-emerald-400 rounded-xl py-3.5 flex flex-col items-center justify-center gap-1.5 font-bold transition-colors">
+                <button onClick={(e) => { e.stopPropagation(); setShowQuickReplies(!showQuickReplies); }} className="flex-1 bg-[#dcf8c6] hover:bg-[#c8efaf] dark:bg-[#128C7E]/30 dark:hover:bg-[#128C7E]/50 text-[#075e54] dark:text-[#25D366] rounded-xl py-3.5 flex flex-col items-center justify-center gap-1.5 font-bold transition-colors">
                   <MessageCircle size={22} />
                   <span className="text-sm">וואצאפ</span>
+                </button>
+                <button onClick={(e) => { e.stopPropagation(); openWaze(); }} className="flex-1 bg-[#e6e8fa] hover:bg-[#d8dbf7] dark:bg-indigo-900/30 dark:hover:bg-indigo-900/50 text-[#1d1b84] dark:text-indigo-400 rounded-xl py-3.5 flex flex-col items-center justify-center gap-1.5 font-bold transition-colors">
+                  <Navigation size={22} />
+                  <span className="text-sm">נווט</span>
                 </button>
 
                 {/* WhatsApp Quick Replies Inline Menu */}

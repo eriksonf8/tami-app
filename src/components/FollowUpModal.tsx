@@ -41,7 +41,8 @@ const FollowUpModal: React.FC<FollowUpModalProps> = ({ job, onClose }) => {
       followUpNote: note,
       partialPayment: partialAmount ? Number(partialAmount) : 0,
       date: followUpDate,
-      timeWindow: timeWindow
+      timeWindow: timeWindow,
+      status: 'approved'
     });
     onClose();
   };
