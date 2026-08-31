@@ -161,8 +161,7 @@ const Settings: React.FC = () => {
               });
             }
             
-            useAppStore.setState(state => ({ jobs: [...state.jobs, ...mockJobs] }));
-            alert(`נוספו ${mockJobs.length} עבודות בדיקה בהצלחה!`);
+            useAppStore.getState().addTestJobs(mockJobs);
           }}
         />
         <SettingsRow 
